@@ -21,8 +21,7 @@ interface ButtonProps extends TouchableOpacityProps {
   size?: "default" | "sm" | "lg";
   children: React.ReactNode;
   style?: ViewStyle;
-  textStyle?: ViewStyle;
-  onPress?: () => void;
+  textStyle?: TextStyle;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   theme?: "light" | "dark";
@@ -34,7 +33,6 @@ const Button: React.FC<ButtonProps> = ({
   children,
   style,
   textStyle,
-  onPress,
   startIcon,
   endIcon,
   theme = "light",
@@ -93,8 +91,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <TouchableOpacity
       style={[styles.button, getVariantStyle(), getSizeStyle(), style]}
-      onPress={onPress}
-      {...props}
+      {...props} // Pass all remaining props to TouchableOpacity
     >
       <View style={styles.content}>
         {startIcon && <View style={{ marginRight: 4 }}>{startIcon}</View>}

@@ -34,7 +34,6 @@ const App = () => {
       <Button
         variant="destructive"
         size="lg"
-        // startIcon={<Icon name="delete" size={20} color="#fff" />}
         onPress={() => alert("Destructive Button Pressed")}
         theme={theme}
       >
@@ -53,7 +52,6 @@ const App = () => {
 
       <Button
         variant="link"
-        // startIcon={<Icon name="link" size={20} color="#6200ea" />}
         onPress={() => alert("Link Button Pressed")}
         theme={theme}
       >

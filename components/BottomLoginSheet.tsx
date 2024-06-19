@@ -1,10 +1,10 @@
-import Colors from "@/constants/Colors";
-import { defaultStyles } from "@/constants/Styles";
+import React from "react";
+import { View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Button from "./Button";
+
 const BottomLoginSheet = () => {
   const { bottom } = useSafeAreaInsets();
 
@@ -58,34 +58,9 @@ const styles = StyleSheet.create({
     padding: 26,
     gap: 14,
   },
-  btnLight: {
-    backgroundColor: "#fff",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  btnLightText: {
-    color: "#000",
-    fontSize: 20,
-    fontFamily: "mon-sb",
-  },
-  btnDark: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  btnDarkText: {
-    color: "#fff",
-    fontSize: 20,
-    fontFamily: "mon-sb",
-  },
-  btnOutline: {
-    borderWidth: 3,
-  },
   btnIcon: {
     paddingRight: 6,
   },
 });
+
 export default BottomLoginSheet;
