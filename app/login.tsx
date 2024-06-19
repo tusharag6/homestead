@@ -15,12 +15,47 @@ const Page = () => {
     emailAddress: "",
     password: "",
     loading: false,
+    error: "",
   });
 
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const onSignInPress = async () => {
-    setFormState({ ...formState, loading: true });
-    console.log(formState.emailAddress, formState.password);
-    setFormState({ ...formState, loading: false });
+    const { emailAddress, password } = formState;
+
+    // Validation checks
+    if (emailAddress === "") {
+      setFormState({ ...formState, error: "Please enter your email address." });
+      return;
+    }
+    if (!validateEmail(emailAddress)) {
+      setFormState({
+        ...formState,
+        error: "Please enter a valid email address.",
+      });
+      return;
+    }
+    if (password === "") {
+      setFormState({ ...formState, error: "Please enter your password." });
+      return;
+    }
+
+    setFormState({ ...formState, loading: true, error: "" });
+
+    try {
+      // API calls
+      console.log(emailAddress, password);
+    } catch (error) {
+      setFormState({
+        ...formState,
+        error: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setFormState({ ...formState, loading: false });
+    }
   };
 
   return (
@@ -29,9 +64,11 @@ const Page = () => {
         source={require("../assets/images/logo-dark.png")}
         style={styles.logo}
       />
-
       <Text style={styles.title}>Welcome back</Text>
       <View style={{ marginBottom: 20 }}>
+        {formState.error ? (
+          <Text style={styles.errorText}>{formState.error}</Text>
+        ) : null}
         <TextInput
           autoCapitalize="none"
           placeholder="john@apple.com"
@@ -57,7 +94,9 @@ const Page = () => {
         onPress={onSignInPress}
         disabled={formState.loading}
       >
-        <Text style={defaultStyles.btnText}>Sign In</Text>
+        <Text style={defaultStyles.btnText}>
+          {formState.loading ? "Signing In..." : "Sign In"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -68,7 +107,6 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
     padding: 20,
     backgroundColor: "#fff",
   },
@@ -84,6 +122,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "mon-sb",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
   },
   btnOutline: {
     backgroundColor: "#fff",

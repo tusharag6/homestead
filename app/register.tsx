@@ -16,12 +16,65 @@ const Page = () => {
     emailAddress: "",
     password: "",
     loading: false,
+    error: "",
   });
 
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const validatePassword = (password: string) => {
+    const re =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return re.test(password);
+  };
+
   const onSignUpPress = async () => {
-    setFormState({ ...formState, loading: true });
-    console.log(formState.name, formState.emailAddress, formState.password);
-    setFormState({ ...formState, loading: false });
+    const { name, emailAddress, password } = formState;
+
+    // validation checks
+    if (name === "") {
+      setFormState({ ...formState, error: "Please enter your name." });
+      return;
+    }
+    if (emailAddress === "") {
+      setFormState({ ...formState, error: "Please enter your email address." });
+      return;
+    }
+    if (!validateEmail(emailAddress)) {
+      setFormState({
+        ...formState,
+        error: "Please enter a valid email address.",
+      });
+      return;
+    }
+    if (password === "") {
+      setFormState({ ...formState, error: "Please enter your password." });
+      return;
+    }
+    if (!validatePassword(password)) {
+      setFormState({
+        ...formState,
+        error:
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      });
+      return;
+    }
+
+    setFormState({ ...formState, loading: true, error: "" });
+
+    try {
+      // API calls
+      console.log(name, emailAddress, password);
+    } catch (error) {
+      setFormState({
+        ...formState,
+        error: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setFormState({ ...formState, loading: false });
+    }
   };
 
   return (
@@ -33,6 +86,9 @@ const Page = () => {
 
       <Text style={styles.title}>Create an account</Text>
       <View style={{ marginBottom: 20 }}>
+        {formState.error ? (
+          <Text style={styles.errorText}>{formState.error}</Text>
+        ) : null}
         <TextInput
           autoCapitalize="none"
           placeholder="John Doe"
@@ -65,7 +121,9 @@ const Page = () => {
         onPress={onSignUpPress}
         disabled={formState.loading}
       >
-        <Text style={defaultStyles.btnText}>Sign Up</Text>
+        <Text style={defaultStyles.btnText}>
+          {formState.loading ? "Signing Up..." : "Sign Up"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -91,6 +149,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "mon-sb",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
   },
   btnOutline: {
     backgroundColor: "#fff",
