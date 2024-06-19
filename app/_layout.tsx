@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 
 export default function RootLayout() {
@@ -43,6 +44,7 @@ export default function RootLayout() {
           ),
         }}
       />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
     </Stack>
   );
 }

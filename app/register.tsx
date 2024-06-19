@@ -1,16 +1,11 @@
-import Colors from "@/constants/Colors";
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, StyleSheet, TextInput, Text, Image } from "react-native";
 import { defaultStyles } from "@/constants/Styles";
 import { useState } from "react";
+import { useRouter } from "expo-router";
+import Button from "@/components/Button";
 
 const Page = () => {
+  const router = useRouter();
   const [formState, setFormState] = useState({
     name: "",
     emailAddress: "",
@@ -67,6 +62,7 @@ const Page = () => {
     try {
       // API calls
       console.log(name, emailAddress, password);
+      router.replace("/(auth)/");
     } catch (error) {
       setFormState({
         ...formState,
@@ -115,16 +111,9 @@ const Page = () => {
           style={defaultStyles.inputField}
         />
       </View>
-
-      <TouchableOpacity
-        style={defaultStyles.btn}
-        onPress={onSignUpPress}
-        disabled={formState.loading}
-      >
-        <Text style={defaultStyles.btnText}>
-          {formState.loading ? "Signing Up..." : "Sign Up"}
-        </Text>
-      </TouchableOpacity>
+      <Button onPress={onSignUpPress} disabled={formState.loading}>
+        {formState.loading ? "Signing Up..." : "Sign Up"}
+      </Button>
     </View>
   );
 };
@@ -154,21 +143,5 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
     textAlign: "center",
-  },
-  btnOutline: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: Colors.grey,
-    height: 50,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingHorizontal: 10,
-  },
-  btnOutlineText: {
-    color: "#000",
-    fontSize: 16,
-    fontFamily: "mon-sb",
   },
 });
