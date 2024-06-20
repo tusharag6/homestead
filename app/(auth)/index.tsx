@@ -1,97 +1,21 @@
 import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
-import ListingCard from "@/components/ListingCard";
+import { StyleSheet } from "react-native";
 import Listings from "@/components/Listings";
-
-const mockData = [
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-  {
-    medium_url: "../../assets/images/home1.webp",
-    name: "Cozy Apartment",
-    review_scores_rating: 90,
-    room_type: "Entire home/apt",
-    price: 120,
-  },
-  {
-    medium_url: "../../assets/images/home2.webp",
-    name: "Modern House",
-    review_scores_rating: 96,
-    room_type: "Private room",
-    price: 200,
-  },
-];
+import { Stack } from "expo-router";
+import ExploreHeader from "@/components/ExploreHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Page: React.FC = () => {
-  return <Listings />;
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <Stack.Screen
+        options={{
+          header: () => <ExploreHeader />,
+        }}
+      />
+      <Listings />
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
