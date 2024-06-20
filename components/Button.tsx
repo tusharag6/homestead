@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   TouchableOpacity,
   Text,
@@ -27,80 +27,88 @@ interface ButtonProps extends TouchableOpacityProps {
   theme?: "light" | "dark";
 }
 
-const Button: React.FC<ButtonProps> = ({
-  variant = "default",
-  size = "default",
-  children,
-  style,
-  textStyle,
-  startIcon,
-  endIcon,
-  theme = "light",
-  ...props
-}) => {
-  const themeColors = colors[theme];
+const Button = forwardRef<TouchableOpacity, ButtonProps>(
+  (
+    {
+      variant = "default",
+      size = "default",
+      children,
+      style,
+      textStyle,
+      startIcon,
+      endIcon,
+      theme = "light",
+      ...props
+    },
+    ref
+  ) => {
+    const themeColors = colors[theme];
 
-  const getVariantStyle = (): ViewStyle => {
-    switch (variant) {
-      case "destructive":
-        return { backgroundColor: themeColors.destructive };
-      case "outline":
-        return {
-          borderWidth: 1,
-          borderColor: themeColors.border,
-          backgroundColor: "transparent",
-        };
-      case "secondary":
-        return { backgroundColor: themeColors.secondary };
-      case "ghost":
-        return { backgroundColor: "transparent" };
-      case "link":
-        return { backgroundColor: "transparent" };
-      default:
-        return { backgroundColor: themeColors.primary };
-    }
-  };
+    const getVariantStyle = (): ViewStyle => {
+      switch (variant) {
+        case "destructive":
+          return { backgroundColor: themeColors.destructive };
+        case "outline":
+          return {
+            borderWidth: 1,
+            borderColor: themeColors.border,
+            backgroundColor: "transparent",
+          };
+        case "secondary":
+          return { backgroundColor: themeColors.secondary };
+        case "ghost":
+          return { backgroundColor: "transparent" };
+        case "link":
+          return { backgroundColor: "transparent" };
+        default:
+          return { backgroundColor: themeColors.primary };
+      }
+    };
 
-  const getSizeStyle = (): ViewStyle => {
-    switch (size) {
-      case "sm":
-        return styles.sm;
-      case "lg":
-        return styles.lg;
-      default:
-        return styles.defaultSize;
-    }
-  };
+    const getSizeStyle = (): ViewStyle => {
+      switch (size) {
+        case "sm":
+          return styles.sm;
+        case "lg":
+          return styles.lg;
+        default:
+          return styles.defaultSize;
+      }
+    };
 
-  const getTextStyle = (): TextStyle => {
-    switch (variant) {
-      case "outline":
-        return { color: themeColors.foreground };
-      case "ghost":
-        return { color: themeColors.foreground };
-      case "link":
-        return {
-          color: themeColors.foreground,
-          textDecorationLine: "underline",
-        };
-      default:
-        return { color: "#fff" };
-    }
-  };
+    const getTextStyle = (): TextStyle => {
+      switch (variant) {
+        case "outline":
+          return { color: themeColors.foreground };
+        case "ghost":
+          return { color: themeColors.foreground };
+        case "link":
+          return {
+            color: themeColors.foreground,
+            textDecorationLine: "underline",
+          };
+        default:
+          return { color: "#fff" };
+      }
+    };
 
-  return (
-    <TouchableOpacity
-      style={[styles.button, getVariantStyle(), getSizeStyle(), style]}
-      {...props} // Pass all remaining props to TouchableOpacity
-    >
-      <View style={styles.content}>
-        {startIcon && <View style={{ marginRight: 4 }}>{startIcon}</View>}
-        <Text style={[styles.text, getTextStyle(), textStyle]}>{children}</Text>
-        {endIcon && <View style={{ marginLeft: 4 }}>{endIcon}</View>}
-      </View>
-    </TouchableOpacity>
-  );
-};
+    return (
+      <TouchableOpacity
+        ref={ref}
+        style={[styles.button, getVariantStyle(), getSizeStyle(), style]}
+        {...props} // Pass all remaining props to TouchableOpacity
+      >
+        <View style={styles.content}>
+          {startIcon && <View style={{ marginRight: 4 }}>{startIcon}</View>}
+          <Text style={[styles.text, getTextStyle(), textStyle]}>
+            {children}
+          </Text>
+          {endIcon && <View style={{ marginLeft: 4 }}>{endIcon}</View>}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   button: {

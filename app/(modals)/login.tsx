@@ -1,8 +1,8 @@
-import { View, StyleSheet, TextInput, Text, Image } from "react-native";
-import { defaultStyles } from "@/constants/Styles";
+import { View, StyleSheet, Text, Image } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 const Page = () => {
   const router = useRouter();
@@ -11,7 +11,11 @@ const Page = () => {
     emailAddress: "",
     password: "",
     loading: false,
-    error: "",
+  });
+
+  const [errors, setErrors] = useState({
+    emailAddress: "",
+    password: "",
   });
 
   const validateEmail = (email: string) => {
@@ -21,68 +25,84 @@ const Page = () => {
 
   const onSignInPress = async () => {
     const { emailAddress, password } = formState;
+    let valid = true;
 
     // Validation checks
     if (emailAddress === "") {
-      setFormState({ ...formState, error: "Please enter your email address." });
-      return;
-    }
-    if (!validateEmail(emailAddress)) {
-      setFormState({
-        ...formState,
-        error: "Please enter a valid email address.",
-      });
-      return;
-    }
-    if (password === "") {
-      setFormState({ ...formState, error: "Please enter your password." });
-      return;
+      setErrors((prev) => ({
+        ...prev,
+        emailAddress: "Please enter your email address.",
+      }));
+      valid = false;
+    } else if (!validateEmail(emailAddress)) {
+      setErrors((prev) => ({
+        ...prev,
+        emailAddress: "Please enter a valid email address.",
+      }));
+      valid = false;
     }
 
-    setFormState({ ...formState, loading: true, error: "" });
+    if (password === "") {
+      setErrors((prev) => ({
+        ...prev,
+        password: "Please enter your password.",
+      }));
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    setFormState({ ...formState, loading: true });
+    setErrors({ emailAddress: "", password: "" });
 
     try {
       // API calls
       console.log(emailAddress, password);
       router.replace("/(auth)/");
     } catch (error) {
-      setFormState({
-        ...formState,
-        error: "Something went wrong. Please try again.",
+      setErrors({
+        emailAddress: "",
+        password: "Something went wrong. Please try again.",
       });
     } finally {
       setFormState({ ...formState, loading: false });
     }
   };
 
+  const handleEmailChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, emailAddress: text }));
+    if (validateEmail(text)) {
+      setErrors((prev) => ({ ...prev, emailAddress: "" }));
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, password: text }));
+    if (text.length > 0) {
+      setErrors((prev) => ({ ...prev, password: "" }));
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/images/logo-dark.png")}
+        source={require("../../assets/images/logo-dark.png")}
         style={styles.logo}
       />
       <Text style={styles.title}>Welcome back</Text>
       <View style={{ marginBottom: 20 }}>
-        {formState.error ? (
-          <Text style={styles.errorText}>{formState.error}</Text>
-        ) : null}
-        <TextInput
-          autoCapitalize="none"
+        <Input
           placeholder="john@apple.com"
           value={formState.emailAddress}
-          onChangeText={(text) =>
-            setFormState({ ...formState, emailAddress: text })
-          }
-          style={[defaultStyles.inputField, { marginBottom: 10 }]}
+          error={errors.emailAddress}
+          onChangeText={handleEmailChange}
         />
-        <TextInput
+        <Input
+          secureTextEntry
           placeholder="password"
           value={formState.password}
-          onChangeText={(text) =>
-            setFormState({ ...formState, password: text })
-          }
-          secureTextEntry
-          style={defaultStyles.inputField}
+          error={errors.password}
+          onChangeText={handlePasswordChange}
         />
       </View>
       <Button onPress={onSignInPress} disabled={formState.loading}>
@@ -112,10 +132,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "mon-sb",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    textAlign: "center",
   },
 });

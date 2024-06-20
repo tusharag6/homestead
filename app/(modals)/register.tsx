@@ -1,8 +1,8 @@
-import { View, StyleSheet, TextInput, Text, Image } from "react-native";
-import { defaultStyles } from "@/constants/Styles";
+import { View, StyleSheet, Text, Image } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 const Page = () => {
   const router = useRouter();
@@ -11,7 +11,12 @@ const Page = () => {
     emailAddress: "",
     password: "",
     loading: false,
-    error: "",
+  });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    emailAddress: "",
+    password: "",
   });
 
   const validateEmail = (email: string) => {
@@ -27,88 +32,110 @@ const Page = () => {
 
   const onSignUpPress = async () => {
     const { name, emailAddress, password } = formState;
+    let valid = true;
 
-    // validation checks
+    // Validation checks
     if (name === "") {
-      setFormState({ ...formState, error: "Please enter your name." });
-      return;
-    }
-    if (emailAddress === "") {
-      setFormState({ ...formState, error: "Please enter your email address." });
-      return;
-    }
-    if (!validateEmail(emailAddress)) {
-      setFormState({
-        ...formState,
-        error: "Please enter a valid email address.",
-      });
-      return;
-    }
-    if (password === "") {
-      setFormState({ ...formState, error: "Please enter your password." });
-      return;
-    }
-    if (!validatePassword(password)) {
-      setFormState({
-        ...formState,
-        error:
-          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      });
-      return;
+      setErrors((prev) => ({ ...prev, name: "Please enter your name." }));
+      valid = false;
     }
 
-    setFormState({ ...formState, loading: true, error: "" });
+    if (emailAddress === "") {
+      setErrors((prev) => ({
+        ...prev,
+        emailAddress: "Please enter your email address.",
+      }));
+      valid = false;
+    } else if (!validateEmail(emailAddress)) {
+      setErrors((prev) => ({
+        ...prev,
+        emailAddress: "Please enter a valid email address.",
+      }));
+      valid = false;
+    }
+
+    if (password === "") {
+      setErrors((prev) => ({
+        ...prev,
+        password: "Please enter your password.",
+      }));
+      valid = false;
+    } else if (!validatePassword(password)) {
+      setErrors((prev) => ({
+        ...prev,
+        password:
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      }));
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    setFormState({ ...formState, loading: true });
+    setErrors({ name: "", emailAddress: "", password: "" });
 
     try {
       // API calls
       console.log(name, emailAddress, password);
       router.replace("/(auth)/");
     } catch (error) {
-      setFormState({
-        ...formState,
-        error: "Something went wrong. Please try again.",
+      setErrors({
+        name: "",
+        emailAddress: "",
+        password: "Something went wrong. Please try again.",
       });
     } finally {
       setFormState({ ...formState, loading: false });
     }
   };
 
+  const handleNameChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, name: text }));
+    if (text.length > 0) {
+      setErrors((prev) => ({ ...prev, name: "" }));
+    }
+  };
+
+  const handleEmailChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, emailAddress: text }));
+    if (validateEmail(text)) {
+      setErrors((prev) => ({ ...prev, emailAddress: "" }));
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, password: text }));
+    if (validatePassword(text)) {
+      setErrors((prev) => ({ ...prev, password: "" }));
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/images/logo-dark.png")}
+        source={require("../../assets/images/logo-dark.png")}
         style={styles.logo}
       />
-
       <Text style={styles.title}>Create an account</Text>
       <View style={{ marginBottom: 20 }}>
-        {formState.error ? (
-          <Text style={styles.errorText}>{formState.error}</Text>
-        ) : null}
-        <TextInput
-          autoCapitalize="none"
+        <Input
           placeholder="John Doe"
           value={formState.name}
-          onChangeText={(text) => setFormState({ ...formState, name: text })}
-          style={[defaultStyles.inputField, { marginBottom: 10 }]}
+          error={errors.name}
+          onChangeText={handleNameChange}
         />
-        <TextInput
-          autoCapitalize="none"
+        <Input
           placeholder="john@apple.com"
           value={formState.emailAddress}
-          onChangeText={(text) =>
-            setFormState({ ...formState, emailAddress: text })
-          }
-          style={[defaultStyles.inputField, { marginBottom: 10 }]}
+          error={errors.emailAddress}
+          onChangeText={handleEmailChange}
         />
-        <TextInput
+        <Input
+          secureTextEntry
           placeholder="password"
           value={formState.password}
-          onChangeText={(text) =>
-            setFormState({ ...formState, password: text })
-          }
-          secureTextEntry
-          style={defaultStyles.inputField}
+          error={errors.password}
+          onChangeText={handlePasswordChange}
         />
       </View>
       <Button onPress={onSignUpPress} disabled={formState.loading}>
@@ -138,10 +165,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "mon-sb",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    textAlign: "center",
   },
 });

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, StyleSheet, Button as RNButton } from "react-native";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Button from "./Button";
-import colors from "@/constants/Colors";
 
 const App = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
