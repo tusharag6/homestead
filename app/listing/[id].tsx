@@ -15,7 +15,6 @@ import Button from "@/components/Button";
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams();
-  console.log(id);
   const navigation = useNavigation();
 
   const listing = listingsData.find((item) => item.id === id);

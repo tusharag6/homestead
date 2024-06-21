@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import FilterContext from "@/context/FilterContext";
 
 interface ListingCardProps {
   item: {
@@ -13,32 +12,22 @@ interface ListingCardProps {
     room_type: string;
     price: number;
   };
+  isGridMode: boolean;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({ item }) => {
-  const filterContext = useContext(FilterContext);
-
-  if (!filterContext) {
-    throw new Error("FilterContext must be used within a FilterProvider");
-  }
-
-  const { isGridMode } = filterContext;
-
-  const listingStyle = {
-    ...styles.listing,
-    padding: isGridMode ? 8 : 16,
-  };
-
-  const imageStyle = {
-    ...styles.image,
-    height: isGridMode ? 150 : 300,
-  };
-
+const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
   return (
-    <Link href={`/listing/${item.id}`} asChild>
+    <Link
+      href={`/listing/${item.id}`}
+      asChild
+      style={isGridMode ? styles.gridCard : styles.listCard}
+    >
       <TouchableOpacity>
-        <View style={listingStyle}>
-          <Image source={{ uri: item.image_url }} style={imageStyle} />
+        <View style={styles.listing}>
+          <Image
+            source={{ uri: item.image_url }}
+            style={isGridMode ? styles.gridImage : styles.listImage}
+          />
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -50,11 +39,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item }) => {
                 paddingLeft: 6,
               }}
             >
-              <Ionicons
-                name="star"
-                size={isGridMode ? 14 : 16}
-                color="#FFD700"
-              />
+              <Ionicons name="star" size={16} color="#FFD700" />
               <Text style={{ fontWeight: "500", marginLeft: 3 }}>
                 {(item.review_scores_rating / 20).toFixed(1)}
               </Text>
@@ -75,9 +60,23 @@ const styles = StyleSheet.create({
   listing: {
     gap: 6,
     marginVertical: 6,
+    padding: 10,
   },
-  image: {
+  listCard: {
+    flex: 1,
+    marginVertical: 6,
+  },
+  gridCard: {
+    flex: 1,
+  },
+  listImage: {
     width: "100%",
+    height: 250,
+    borderRadius: 10,
+  },
+  gridImage: {
+    width: "100%",
+    height: 150,
     borderRadius: 10,
   },
 });

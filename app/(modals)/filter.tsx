@@ -5,8 +5,6 @@ import { Switch } from "react-native-paper";
 import FilterContext, { FilterProvider } from "@/context/FilterContext";
 
 const Filters = () => {
-  // const [isSwitchOn, setIsSwitchOn] = useState(false);
-  // const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
   const filterContext = useContext(FilterContext);
 
   if (!filterContext) {

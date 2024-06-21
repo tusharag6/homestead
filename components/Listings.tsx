@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { FlatList, StyleSheet, ViewStyle } from "react-native";
+import { FlatList, StyleSheet, View, ViewStyle } from "react-native";
 import ListingCard from "@/components/ListingCard";
 import FilterContext from "@/context/FilterContext";
 
@@ -51,22 +51,18 @@ const Listings: React.FC = () => {
 
   const { isGridMode } = filterContext;
 
-  const containerStyle: ViewStyle = {
-    ...styles.container,
-    // paddingHorizontal: isGridMode ? 5 : 10,
-    flex: 1,
-    alignItems: isGridMode ? "center" : "stretch",
-  };
-
   return (
-    <FlatList
-      data={mockData}
-      renderItem={({ item }) => <ListingCard item={item} />}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={containerStyle}
-      numColumns={isGridMode ? 2 : 1}
-      key={isGridMode ? "grid" : "list"}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={mockData}
+        renderItem={({ item }) => (
+          <ListingCard item={item} isGridMode={isGridMode} />
+        )}
+        keyExtractor={(item) => item.id}
+        numColumns={isGridMode ? 2 : 1}
+        key={isGridMode ? "grid" : "list"}
+      />
+    </View>
   );
 };
 

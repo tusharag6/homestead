@@ -1,4 +1,4 @@
-import { FC, ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface FilterContextProps {
   isGridMode: boolean;
@@ -10,10 +10,12 @@ const FilterContext = createContext<FilterContextProps | undefined>(undefined);
 export const FilterProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  useEffect(() => {}, []);
+
   const [isGridMode, setIsGridMode] = useState<boolean>(false);
 
   const toggleGridMode = () => {
-    setIsGridMode(!isGridMode);
+    setIsGridMode((prev) => !prev);
   };
 
   return (

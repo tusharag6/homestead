@@ -2,7 +2,6 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
 import { TouchableOpacity } from "react-native";
 import { FilterProvider } from "@/context/FilterContext";
 
