@@ -34,15 +34,15 @@ const ExploreHeader = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: Colors.light.border,
+    // borderWidth: 1,
+    // borderColor: Colors.light.border,
   },
   actionRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 16,
   },
 
   searchBtn: {
