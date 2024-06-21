@@ -57,7 +57,7 @@ const DetailsPage = () => {
 
   return (
     <ScrollView style={styles.scrollView}>
-      <Image source={{ uri: listing.medium_url }} style={styles.image} />
+      <Image source={{ uri: listing.image_url }} style={styles.image} />
       <View style={styles.container}>
         <Text style={styles.name}>{listing.name}</Text>
         <View style={styles.ratingContainer}>

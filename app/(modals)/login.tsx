@@ -58,7 +58,7 @@ const Page = () => {
     try {
       // API calls
       console.log(emailAddress, password);
-      router.replace("/(auth)/");
+      router.replace("/(tabs)/");
     } catch (error) {
       setErrors({
         emailAddress: "",

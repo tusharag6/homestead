@@ -23,9 +23,11 @@ const ExploreHeader = () => {
           </TouchableOpacity>
         </Link>
         {/* // filter button */}
-        <TouchableOpacity style={styles.filterBtn}>
-          <Ionicons name="options-outline" size={24} />
-        </TouchableOpacity>
+        <Link href={"(modals)/filter"} asChild>
+          <TouchableOpacity style={styles.filterBtn}>
+            <Ionicons name="options-outline" size={24} />
+          </TouchableOpacity>
+        </Link>
       </View>
     </SafeAreaView>
   );

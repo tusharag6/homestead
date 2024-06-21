@@ -1,10 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter, useSegments } from "expo-router";
-import { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
-import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
+import { SplashScreen, Stack, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
+import { TouchableOpacity } from "react-native";
+import { FilterProvider } from "@/context/FilterContext";
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -29,25 +31,32 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <FilterProvider>
+      <RootLayoutNav />
+    </FilterProvider>
+  );
 }
 
 function RootLayoutNav() {
   const router = useRouter();
+  const isSignedIn = false;
+  const isLoaded = true;
+
+  // Automatically open login if user is not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/(modals)/login");
+    }
+  }, [isLoaded]);
 
   return (
     <Stack>
       <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="(modals)/login"
         options={{
           presentation: "modal",
-          title: "Log In",
+          title: "Log in or sign up",
           headerTitleStyle: {
             fontFamily: "mon-sb",
           },
@@ -59,10 +68,10 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
-        name="(modals)/register"
+        name="(modals)/filter"
         options={{
           presentation: "modal",
-          title: "Sign Up",
+          title: "Filters",
           headerTitleStyle: {
             fontFamily: "mon-sb",
           },
@@ -73,7 +82,7 @@ function RootLayoutNav() {
           ),
         }}
       />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="listing/[id]" options={{ headerTitle: "" }} />
     </Stack>
   );

@@ -77,7 +77,7 @@ const Page = () => {
     try {
       // API calls
       console.log(name, emailAddress, password);
-      router.replace("/(auth)/");
+      router.replace("/(tabs)/");
     } catch (error) {
       setErrors({
         name: "",
