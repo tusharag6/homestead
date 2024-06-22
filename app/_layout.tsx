@@ -60,7 +60,10 @@ function RootLayoutNav() {
             fontFamily: "mon-sb",
           },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ paddingLeft: 6 }}
+            >
               <Ionicons name="close-outline" size={28} />
             </TouchableOpacity>
           ),
@@ -75,22 +78,10 @@ function RootLayoutNav() {
             fontFamily: "mon-sb",
           },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/reserve"
-        options={{
-          presentation: "modal",
-          title: "Confirm your reservation",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ paddingLeft: 6 }}
+            >
               <Ionicons name="close-outline" size={28} />
             </TouchableOpacity>
           ),
@@ -98,6 +89,24 @@ function RootLayoutNav() {
       />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="listing/[id]" options={{ headerTitle: "" }} />
+      <Stack.Screen
+        name="booking/[id]"
+        options={{
+          presentation: "modal",
+          title: "Confirm your booking",
+          headerTitleStyle: {
+            fontFamily: "mon-sb",
+          },
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="arrow-back-outline" size={24} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Stack>
   );
 }

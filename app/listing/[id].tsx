@@ -28,6 +28,8 @@ interface DateRange {
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams();
+  const listing = listingsData.find((item) => item.id === id);
+
   const navigation = useNavigation();
 
   const [range, setRange] = useState<DateRange>({
@@ -52,8 +54,6 @@ const DetailsPage = () => {
     },
     [setRange]
   );
-
-  const listing = listingsData.find((item) => item.id === id);
 
   if (!listing) {
     return (
@@ -225,7 +225,7 @@ const DetailsPage = () => {
             </View>
           </View>
 
-          <Link href={"(modals)/reserve"} asChild>
+          <Link href={`/booking/${id}`} asChild>
             <Button>Reserve</Button>
           </Link>
         </View>
