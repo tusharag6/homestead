@@ -40,12 +40,17 @@ const DetailsPage = () => {
     setOpen(false);
   }, [setOpen]);
 
-  const onConfirm = React.useCallback(
+  const onClear = React.useCallback(
+    ({ startDate, endDate }: DateRange) => {
+      setRange({ startDate: undefined, endDate: undefined });
+    },
+    [setRange]
+  );
+  const onChange = React.useCallback(
     ({ startDate, endDate }: DateRange) => {
       setRange({ startDate, endDate });
-      setOpen(false);
     },
-    [setOpen, setRange]
+    [setRange]
   );
 
   const listing = listingsData.find((item) => item.id === id);
@@ -213,7 +218,9 @@ const DetailsPage = () => {
                 onDismiss={onDismiss}
                 startDate={range.startDate}
                 endDate={range.endDate}
-                onConfirm={onConfirm}
+                onConfirm={onClear}
+                onChange={onChange}
+                saveLabel="Clear Dates"
               />
             </View>
           </View>
