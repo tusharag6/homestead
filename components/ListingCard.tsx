@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { useWishlist } from "@/hooks/useWishlist";
 
 interface ListingCardProps {
   item: {
@@ -16,43 +17,67 @@ interface ListingCardProps {
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
+  const { state, dispatch } = useWishlist();
+  const isInWishlist = state.items.some(
+    (wishlistItem) => wishlistItem.id === item.id
+  );
+
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      dispatch({ type: "REMOVE_ITEM", payload: { id: item.id } });
+    } else {
+      dispatch({ type: "ADD_ITEM", payload: item });
+    }
+  };
+
   return (
-    <Link
-      href={`/listing/${item.id}`}
-      asChild
-      style={isGridMode ? styles.gridCard : styles.listCard}
-    >
-      <TouchableOpacity>
-        <View style={styles.listing}>
-          <Image
-            source={{ uri: item.image_url }}
-            style={isGridMode ? styles.gridImage : styles.listImage}
-          />
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text style={{ fontWeight: "500", fontSize: 16 }}>{item.name}</Text>
+    <View style={isGridMode ? styles.gridCard : styles.listCard}>
+      <TouchableOpacity onPress={toggleWishlist} style={styles.heartIcon}>
+        <Ionicons
+          name={isInWishlist ? "heart" : "heart-outline"}
+          size={24}
+          color={isInWishlist ? "red" : "black"}
+        />
+      </TouchableOpacity>
+      <Link href={`/listing/${item.id}`} asChild>
+        <TouchableOpacity>
+          <View style={styles.listing}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: item.image_url }}
+                style={isGridMode ? styles.gridImage : styles.listImage}
+              />
+            </View>
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingLeft: 6,
-              }}
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Ionicons name="star" size={16} color="#FFD700" />
-              <Text style={{ fontWeight: "500", marginLeft: 3 }}>
-                {(item.review_scores_rating / 20).toFixed(1)}
+              <Text style={{ fontWeight: "500", fontSize: 16 }}>
+                {item.name}
               </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingLeft: 6,
+                }}
+              >
+                <Ionicons name="star" size={16} color="#FFD700" />
+                <Text style={{ fontWeight: "500", marginLeft: 3 }}>
+                  {(item.review_scores_rating / 20).toFixed(1)}
+                </Text>
+              </View>
+            </View>
+            <Text>{item.room_type}</Text>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            >
+              <Text style={{ fontWeight: "500" }}>Rs {item.price}</Text>
+              <Text>/ night</Text>
             </View>
           </View>
-          <Text>{item.room_type}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <Text style={{ fontWeight: "500" }}>Rs {item.price}</Text>
-            <Text>/ night</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Link>
+        </TouchableOpacity>
+      </Link>
+    </View>
   );
 };
 
@@ -78,6 +103,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 150,
     borderRadius: 10,
+  },
+  imageContainer: {
+    position: "relative",
+  },
+  heartIcon: {
+    position: "absolute",
+    top: 20,
+    right: 15,
+    backgroundColor: "white",
+    borderRadius: 24,
+    padding: 8,
+    zIndex: 1,
   },
 });
 

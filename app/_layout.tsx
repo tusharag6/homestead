@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { FilterProvider } from "@/context/FilterContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,9 +32,11 @@ export default function RootLayout() {
   }
 
   return (
-    <FilterProvider>
-      <RootLayoutNav />
-    </FilterProvider>
+    <WishlistProvider>
+      <FilterProvider>
+        <RootLayoutNav />
+      </FilterProvider>
+    </WishlistProvider>
   );
 }
 
@@ -92,19 +95,10 @@ function RootLayoutNav() {
       <Stack.Screen
         name="booking/[id]"
         options={{
-          presentation: "modal",
           title: "Confirm your booking",
           headerTitleStyle: {
             fontFamily: "mon-sb",
           },
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ paddingLeft: 6 }}
-            >
-              <Ionicons name="arrow-back-outline" size={24} />
-            </TouchableOpacity>
-          ),
         }}
       />
     </Stack>
