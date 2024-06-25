@@ -204,7 +204,7 @@ const DetailsPage = () => {
         >
           <View style={styles.footerText}>
             <View style={{ display: "flex", flexDirection: "row" }}>
-              <Text style={styles.footerPrice}>€{listing.price}</Text>
+              <Text style={styles.footerPrice}>Rs {listing.price}</Text>
               <Text> / night</Text>
             </View>
             <View>

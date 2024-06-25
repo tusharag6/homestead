@@ -25,6 +25,7 @@ interface ButtonProps extends TouchableOpacityProps {
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   theme?: "light" | "dark";
+  iconPlacement?: "inline" | "separate";
 }
 
 const Button = forwardRef<TouchableOpacity, ButtonProps>(
@@ -38,6 +39,7 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
       startIcon,
       endIcon,
       theme = "light",
+      iconPlacement = "inline",
       ...props
     },
     ref
@@ -92,19 +94,33 @@ const Button = forwardRef<TouchableOpacity, ButtonProps>(
       }
     };
 
-    return (
-      <TouchableOpacity
-        ref={ref}
-        style={[styles.button, getVariantStyle(), getSizeStyle(), style]}
-        {...props} // Pass all remaining props to TouchableOpacity
-      >
-        <View style={styles.content}>
+    const inlineContent = (
+      <View style={styles.content}>
+        {startIcon && <View style={{ marginRight: 4 }}>{startIcon}</View>}
+        <Text style={[styles.text, getTextStyle(), textStyle]}>{children}</Text>
+        {endIcon && <View style={{ marginLeft: 4 }}>{endIcon}</View>}
+      </View>
+    );
+
+    const separateContent = (
+      <View style={styles.separateContent}>
+        <View style={styles.inlineContent}>
           {startIcon && <View style={{ marginRight: 4 }}>{startIcon}</View>}
           <Text style={[styles.text, getTextStyle(), textStyle]}>
             {children}
           </Text>
-          {endIcon && <View style={{ marginLeft: 4 }}>{endIcon}</View>}
         </View>
+        {endIcon && <View style={{ marginLeft: 4 }}>{endIcon}</View>}
+      </View>
+    );
+
+    return (
+      <TouchableOpacity
+        ref={ref}
+        style={[styles.button, getVariantStyle(), getSizeStyle(), style]}
+        {...props}
+      >
+        {iconPlacement === "inline" ? inlineContent : separateContent}
       </TouchableOpacity>
     );
   }
@@ -118,9 +134,19 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   text: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: "mon",
   } as TextStyle,
   content: {
+    flexDirection: "row",
+    alignItems: "center",
+  } as ViewStyle,
+  separateContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  } as ViewStyle,
+  inlineContent: {
     flexDirection: "row",
     alignItems: "center",
   } as ViewStyle,
