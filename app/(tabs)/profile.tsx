@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import {
   Ionicons,
   MaterialIcons,
@@ -15,19 +15,52 @@ import {
 } from "@expo/vector-icons";
 import colors from "@/constants/Colors";
 import Button from "@/components/Button";
+import { Link } from "expo-router";
+
+import * as ImagePicker from "expo-image-picker";
 
 const Profile = () => {
+  const [image, setImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.profileHeader}>
-        <Image
-          source={{ uri: "https://via.placeholder.com/150" }}
-          style={styles.avatar}
-        />
+        <View>
+          <Image
+            source={{ uri: image || "https://via.placeholder.com/150" }}
+            style={styles.avatar}
+          />
+          <TouchableOpacity style={styles.editAvatar} onPress={pickImage}>
+            <Ionicons name="pencil-outline" size={16} color={"black"} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.profileDetails}>
           <Text style={styles.profileName}>Tushar</Text>
           <TouchableOpacity>
-            <Text style={styles.showProfileText}>Show profile</Text>
+            <Link href={"(modals)/personal"} asChild>
+              <Text style={styles.showProfileText}>Show profile</Text>
+            </Link>
           </TouchableOpacity>
         </View>
       </View>
@@ -51,18 +84,22 @@ const Profile = () => {
       {/* Settings */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Settings</Text>
-        <Button
-          startIcon={
-            <Ionicons name="person-circle-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          iconPlacement="separate"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-        >
-          Personal Information
-        </Button>
+        <Link href={"(modals)/personal"} asChild>
+          <Button
+            startIcon={
+              <Ionicons name="person-circle-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            iconPlacement="separate"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+          >
+            Personal Information
+          </Button>
+        </Link>
         <Button
           startIcon={<MaterialIcons name="payment" size={24} color="black" />}
           endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
@@ -213,9 +250,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  editAvatar: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   profileDetails: {
     marginLeft: 10,
