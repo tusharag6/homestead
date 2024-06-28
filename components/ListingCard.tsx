@@ -33,10 +33,7 @@ interface ListingCardProps {
 const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
   useEffect(() => {
     console.log("use effect card");
-    // console.log("====================================");
-    // console.log(item);
-    // console.log("====================================");
-  });
+  }, [item]);
 
   const { state, dispatch } = useWishlist();
   const isInWishlist = state.items.some(
@@ -60,7 +57,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
           color={isInWishlist ? "red" : "black"}
         />
       </TouchableOpacity>
-      <Link href={`/listing/${item._id}`} asChild>
+      <Link href={`(routes)/listing/${item._id}`} asChild>
         <TouchableOpacity>
           <View style={styles.listing}>
             <View style={styles.imageContainer}>

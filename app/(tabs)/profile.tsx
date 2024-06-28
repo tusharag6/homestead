@@ -18,6 +18,7 @@ import Button from "@/components/Button";
 import { Link } from "expo-router";
 
 import * as ImagePicker from "expo-image-picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Profile = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -45,193 +46,226 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.profileHeader}>
+      <SafeAreaView>
         <View>
+          <Text style={styles.screenHeader}>Profile</Text>
+        </View>
+        <View style={styles.profileHeader}>
+          <View>
+            <Image
+              source={{ uri: image || "https://via.placeholder.com/150" }}
+              style={styles.avatar}
+            />
+            <TouchableOpacity style={styles.editAvatar} onPress={pickImage}>
+              <Ionicons name="pencil-outline" size={16} color={"black"} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.profileDetails}>
+            <Text style={styles.profileName}>Tushar</Text>
+            <TouchableOpacity>
+              <Link href={"(modals)/personal"} asChild>
+                <Text style={styles.showProfileText}>Show profile</Text>
+              </Link>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* List your place */}
+        <TouchableOpacity style={styles.listPlaceCard}>
+          <View style={styles.listPlaceTextContainer}>
+            <Text style={styles.listPlaceTitle}>List your place</Text>
+            <Text style={styles.listPlaceSubtitle}>
+              It's simple to get set up and start earning
+            </Text>
+          </View>
           <Image
-            source={{ uri: image || "https://via.placeholder.com/150" }}
-            style={styles.avatar}
+            source={{
+              uri: "https://freight.cargo.site/t/original/i/f27b0d50e7e58e32967a5a856995a5b23420e7eac7d22783af9231ade4e8e451/SL060_empty_nest_cyc_comp_v03.1062-1.png",
+            }}
+            style={styles.listPlaceImage}
           />
-          <TouchableOpacity style={styles.editAvatar} onPress={pickImage}>
-            <Ionicons name="pencil-outline" size={16} color={"black"} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.profileDetails}>
-          <Text style={styles.profileName}>Tushar</Text>
-          <TouchableOpacity>
-            <Link href={"(modals)/personal"} asChild>
-              <Text style={styles.showProfileText}>Show profile</Text>
-            </Link>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </TouchableOpacity>
 
-      {/* List your place */}
-      <TouchableOpacity style={styles.listPlaceCard}>
-        <View style={styles.listPlaceTextContainer}>
-          <Text style={styles.listPlaceTitle}>List your place</Text>
-          <Text style={styles.listPlaceSubtitle}>
-            It's simple to get set up and start earning
-          </Text>
-        </View>
-        <Image
-          source={{
-            uri: "https://freight.cargo.site/t/original/i/f27b0d50e7e58e32967a5a856995a5b23420e7eac7d22783af9231ade4e8e451/SL060_empty_nest_cyc_comp_v03.1062-1.png",
-          }}
-          style={styles.listPlaceImage}
-        />
-      </TouchableOpacity>
-
-      {/* Settings */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Settings</Text>
-        <Link href={"(modals)/personal"} asChild>
+        {/* Settings */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Settings</Text>
+          <Link href={"(modals)/personal"} asChild>
+            <Button
+              startIcon={
+                <Ionicons
+                  name="person-circle-outline"
+                  size={24}
+                  color="black"
+                />
+              }
+              endIcon={
+                <Ionicons name="chevron-forward" size={24} color="black" />
+              }
+              variant="ghost"
+              iconPlacement="separate"
+              textStyle={styles.settingsItemText}
+              style={styles.settingsItem}
+            >
+              Personal Information
+            </Button>
+          </Link>
+          <Button
+            startIcon={<MaterialIcons name="payment" size={24} color="black" />}
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Payments
+          </Button>
+          <Button
+            startIcon={<FontAwesome5 name="language" size={24} color="black" />}
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Translations
+          </Button>
           <Button
             startIcon={
-              <Ionicons name="person-circle-outline" size={24} color="black" />
+              <Ionicons name="notifications-outline" size={24} color="black" />
             }
             endIcon={
               <Ionicons name="chevron-forward" size={24} color="black" />
             }
             variant="ghost"
-            iconPlacement="separate"
             textStyle={styles.settingsItemText}
             style={styles.settingsItem}
+            iconPlacement="separate"
           >
-            Personal Information
+            Notifications
           </Button>
-        </Link>
-        <Button
-          startIcon={<MaterialIcons name="payment" size={24} color="black" />}
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Payments
-        </Button>
-        <Button
-          startIcon={<FontAwesome5 name="language" size={24} color="black" />}
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Translations
-        </Button>
-        <Button
-          startIcon={
-            <Ionicons name="notifications-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Notifications
-        </Button>
-        <Button
-          startIcon={
-            <Ionicons name="shield-checkmark-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Privacy and Sharing
-        </Button>
-      </View>
+          <Button
+            startIcon={
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={24}
+                color="black"
+              />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Privacy and Sharing
+          </Button>
+        </View>
 
-      {/* Support */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Support</Text>
-        <Button
-          startIcon={
-            <Ionicons name="help-circle-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Visit the help center
-        </Button>
-        <Button
-          startIcon={
-            <Ionicons name="alert-circle-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Get help with a safety issue
-        </Button>
-        <Button
-          startIcon={
-            <Ionicons name="megaphone-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Report a listing
-        </Button>
-        <Button
-          startIcon={
-            <FontAwesome name="commenting-o" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Give us feedback
-        </Button>
-      </View>
+        {/* Support */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Support</Text>
+          <Button
+            startIcon={
+              <Ionicons name="help-circle-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Visit the help center
+          </Button>
+          <Button
+            startIcon={
+              <Ionicons name="alert-circle-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Get help with a safety issue
+          </Button>
+          <Button
+            startIcon={
+              <Ionicons name="megaphone-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Report a listing
+          </Button>
+          <Button
+            startIcon={
+              <FontAwesome name="commenting-o" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Give us feedback
+          </Button>
+        </View>
 
-      {/* Legal */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Legal</Text>
-        <Button
-          startIcon={
-            <Ionicons name="document-text-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Terms of service
-        </Button>
-        <Button
-          startIcon={
-            <Ionicons name="lock-closed-outline" size={24} color="black" />
-          }
-          endIcon={<Ionicons name="chevron-forward" size={24} color="black" />}
-          variant="ghost"
-          textStyle={styles.settingsItemText}
-          style={styles.settingsItem}
-          iconPlacement="separate"
-        >
-          Privacy Policy
-        </Button>
-      </View>
+        {/* Legal */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Legal</Text>
+          <Button
+            startIcon={
+              <Ionicons name="document-text-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Terms of service
+          </Button>
+          <Button
+            startIcon={
+              <Ionicons name="lock-closed-outline" size={24} color="black" />
+            }
+            endIcon={
+              <Ionicons name="chevron-forward" size={24} color="black" />
+            }
+            variant="ghost"
+            textStyle={styles.settingsItemText}
+            style={styles.settingsItem}
+            iconPlacement="separate"
+          >
+            Privacy Policy
+          </Button>
+        </View>
 
-      {/* Logout */}
-      <View style={styles.logoutButton}>
-        <Button variant="destructive">Logout</Button>
-      </View>
+        {/* Logout */}
+        <View style={styles.logoutButton}>
+          <Button variant="destructive">Logout</Button>
+        </View>
+      </SafeAreaView>
     </ScrollView>
   );
 };
@@ -242,10 +276,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 20,
   },
+  screenHeader: {
+    paddingTop: 50,
+    paddingBottom: 30,
+    fontSize: 26,
+    fontFamily: "mon-sb",
+  },
   profileHeader: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 20,
+    paddingBottom: 20,
     backgroundColor: "#fff",
     marginBottom: 10,
   },

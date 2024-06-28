@@ -24,7 +24,7 @@ const BottomLoginSheet = () => {
       >
         Continue with Google
       </Button>
-      <Link href={"/register"} asChild>
+      <Link href={"(routes)/register"} asChild>
         <Button
           textStyle={{ color: "black" }}
           variant="secondary"
@@ -40,7 +40,7 @@ const BottomLoginSheet = () => {
           Sign up with email
         </Button>
       </Link>
-      <Link href={"/login"} style={{ marginBottom: 10 }} asChild>
+      <Link href={"(routes)/login"} style={{ marginBottom: 10 }} asChild>
         <Button>Log In</Button>
       </Link>
     </View>

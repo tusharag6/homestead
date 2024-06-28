@@ -225,7 +225,7 @@ const DetailsPage = () => {
             </View>
           </View>
 
-          <Link href={`/booking/${id}`} asChild>
+          <Link href={`(routes)/booking/${id}`} asChild>
             <Button>Reserve</Button>
           </Link>
         </View>

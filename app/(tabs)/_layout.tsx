@@ -1,24 +1,20 @@
 import React, { useEffect } from "react";
 import { Tabs, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 
 const Layout = () => {
-  const router = useRouter();
-
-  useEffect(() => {}, []);
-
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.light.primary,
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: true,
           tabBarLabel: "Explore",
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="search" size={size} color={color} />
@@ -35,24 +31,11 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
-        name="trips"
+        name="booking"
         options={{
-          tabBarLabel: "Trips",
+          tabBarLabel: "Bookings",
           tabBarIcon: ({ size, color }) => (
-            <FontAwesome5 name="airbnb" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="inbox"
-        options={{
-          tabBarLabel: "Inbox",
-          tabBarIcon: ({ size, color }) => (
-            <MaterialCommunityIcons
-              name="message-outline"
-              size={size}
-              color={color}
-            />
+            <AntDesign name="book" size={size} color={color} />
           ),
         }}
       />

@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Inbox = () => {
+const Booking = () => {
   return (
     <View>
-      <Text>Inbox</Text>
+      <Text>Booking</Text>
     </View>
   );
 };
 
-export default Inbox;
+export default Booking;
 
 const styles = StyleSheet.create({});

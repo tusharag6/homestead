@@ -8,6 +8,9 @@ const Wishlists = () => {
 
   return (
     <View style={styles.container}>
+      <View>
+        <Text style={styles.screenHeader}>Wishlist</Text>
+      </View>
       {!state || state.items.length === 0 ? (
         <View style={styles.body}>
           <Text style={styles.title}>Create your wishlist</Text>
@@ -37,6 +40,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+  },
+  screenHeader: {
+    paddingVertical: 30,
+    fontSize: 26,
+    fontFamily: "mon-sb",
   },
   body: {
     flex: 1,

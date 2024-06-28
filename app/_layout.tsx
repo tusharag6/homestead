@@ -42,34 +42,28 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const router = useRouter();
-  const isSignedIn = false;
+  const user = false;
   const isLoaded = true;
 
-  // Automatically open login if user is not authenticated
   useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.push("/(modals)/login");
+    if (isLoaded && !user) {
+      router.replace("/(routes)/onboarding");
+    } else {
+      router.replace("/(tabs)");
     }
   }, [isLoaded]);
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(routes)/login" />
+      <Stack.Screen name="(routes)/register" />
       <Stack.Screen
-        name="(modals)/login"
+        name="(routes)/booking/[id]"
         options={{
-          presentation: "modal",
-          title: "Log in or sign up",
+          title: "Confirm your booking",
           headerTitleStyle: {
             fontFamily: "mon-sb",
           },
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ paddingLeft: 6 }}
-            >
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
         }}
       />
       <Stack.Screen
@@ -106,17 +100,6 @@ function RootLayoutNav() {
               <Ionicons name="close-outline" size={28} />
             </TouchableOpacity>
           ),
-        }}
-      />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="listing/[id]" options={{ headerTitle: "" }} />
-      <Stack.Screen
-        name="booking/[id]"
-        options={{
-          title: "Confirm your booking",
-          headerTitleStyle: {
-            fontFamily: "mon-sb",
-          },
         }}
       />
     </Stack>

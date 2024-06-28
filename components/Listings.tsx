@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import ListingCard from "@/components/ListingCard";
 import FilterContext from "@/context/FilterContext";
@@ -67,43 +73,20 @@ interface Listing {
 
 const Listings: React.FC = () => {
   const [listingData, setListingData] = useState<Listing[]>([]);
-  const [nextPage, setNextPage] = useState(1);
+  const nextPage = useRef(1);
   const [loading, setLoading] = useState(false);
 
-  // const fetchListings = useCallback(async () => {
-  //   if (loading) return;
-  //   console.log("Fetching page : ", nextPage);
+  const fetchListings = async (initialLoading: boolean = true) => {
+    console.log("fetch listing re render");
 
-  //   setLoading(true);
-  //   try {
-  //     const res = await fetch(
-  //       `http://192.168.1.10:5000/api/v1/listings/all?page=${nextPage}&limit=10`
-  //     );
-  //     if (res.ok) {
-  //       const responseJson = await res.json();
-  //       const listings: Listing[] = responseJson.data.listings;
-  //       setListingData((existingListings) => [
-  //         ...existingListings,
-  //         ...listings,
-  //       ]);
-  //       setNextPage(responseJson.data.next.page);
-  //     } else {
-  //       console.error("Failed to fetch listings");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching listings:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [nextPage, loading]);
-  const fetchListings = async () => {
     if (loading) return;
-    console.log("Fetching page : ", nextPage);
+    console.log("Fetching page : ", nextPage.current);
 
-    setLoading(true);
+    !initialLoading && setLoading(true);
+
     try {
       const res = await fetch(
-        `http://192.168.1.10:5000/api/v1/listings/all?page=${nextPage}&limit=10`
+        `http://192.168.1.10:5000/api/v1/listings/all?page=${nextPage.current}&limit=10`
       );
       if (res.ok) {
         const responseJson = await res.json();
@@ -112,15 +95,16 @@ const Listings: React.FC = () => {
           ...existingListings,
           ...listings,
         ]);
-        // console.log(listings.length);
-        setNextPage(responseJson.data.next.page);
+
+        nextPage.current =
+          responseJson.data?.next?.page || nextPage.current + 1;
       } else {
         console.error("Failed to fetch listings");
       }
     } catch (error) {
       console.error("Error fetching listings:", error);
     } finally {
-      setLoading(false);
+      !initialLoading && setLoading(false);
     }
   };
 
@@ -129,6 +113,10 @@ const Listings: React.FC = () => {
     fetchListings();
   }, []);
 
+  useEffect(() => {
+    console.log("listing component re render", listingData.length);
+  });
+
   const filterContext = useContext(FilterContext);
 
   if (!filterContext) {
@@ -136,7 +124,6 @@ const Listings: React.FC = () => {
   }
 
   const { isGridMode } = filterContext;
-
   console.log("Re render");
 
   return (
@@ -149,11 +136,10 @@ const Listings: React.FC = () => {
         keyExtractor={(item) => item._id}
         numColumns={isGridMode ? 2 : 1}
         key={isGridMode ? "grid" : "list"}
-        // onEndReached={() => {
-        //   // fetchListings();
-        //   console.log("On end reached");
-        // }}
-        // onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          fetchListings(false);
+        }}
+        onEndReachedThreshold={1}
         ListFooterComponent={
           loading ? <ActivityIndicator size="large" /> : null
         }
@@ -164,7 +150,6 @@ const Listings: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 10,
   },
 });
