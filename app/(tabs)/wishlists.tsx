@@ -22,7 +22,7 @@ const Wishlists = () => {
           renderItem={({ item }) => (
             <ListingCard item={item} isGridMode={false} />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           contentContainerStyle={styles.list}
         />
       )}

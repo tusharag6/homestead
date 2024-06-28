@@ -209,7 +209,11 @@ const Page = () => {
           onChangeText={(text) => onInputChange("bio", text)}
         />
       </View>
-      <Button onPress={onSavePress} disabled={formState.loading}>
+      <Button
+        onPress={onSavePress}
+        disabled={formState.loading}
+        style={{ paddingBottom: 20 }}
+      >
         {formState.loading ? "Saving..." : "Save"}
       </Button>
     </ScrollView>

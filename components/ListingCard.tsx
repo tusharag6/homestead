@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
@@ -6,25 +6,46 @@ import { useWishlist } from "@/hooks/useWishlist";
 
 interface ListingCardProps {
   item: {
-    id: string;
-    image_url: string;
+    _id: string;
     name: string;
-    review_scores_rating: number;
-    room_type: string;
+    description: string;
+    address: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    house_rules: string;
+    listing_image_url: string;
+    amenities: [string];
     price: number;
+    review_scores_rating: number;
+    number_of_reviews: number;
+    room_type: string;
+    property_type: string;
+    accommodates: string;
+    __v: number;
+    createdAt: string;
+    updatedAt: string;
   };
   isGridMode: boolean;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
+  useEffect(() => {
+    console.log("use effect card");
+    // console.log("====================================");
+    // console.log(item);
+    // console.log("====================================");
+  });
+
   const { state, dispatch } = useWishlist();
   const isInWishlist = state.items.some(
-    (wishlistItem) => wishlistItem.id === item.id
+    (wishlistItem) => wishlistItem._id === item._id
   );
 
   const toggleWishlist = () => {
     if (isInWishlist) {
-      dispatch({ type: "REMOVE_ITEM", payload: { id: item.id } });
+      dispatch({ type: "REMOVE_ITEM", payload: { id: item._id } });
     } else {
       dispatch({ type: "ADD_ITEM", payload: item });
     }
@@ -39,12 +60,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
           color={isInWishlist ? "red" : "black"}
         />
       </TouchableOpacity>
-      <Link href={`/listing/${item.id}`} asChild>
+      <Link href={`/listing/${item._id}`} asChild>
         <TouchableOpacity>
           <View style={styles.listing}>
             <View style={styles.imageContainer}>
               <Image
-                source={{ uri: item.image_url }}
+                source={{ uri: item.listing_image_url }}
                 style={isGridMode ? styles.gridImage : styles.listImage}
               />
             </View>
@@ -63,7 +84,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
               >
                 <Ionicons name="star" size={16} color="#FFD700" />
                 <Text style={{ fontWeight: "500", marginLeft: 3 }}>
-                  {(item.review_scores_rating / 20).toFixed(1)}
+                  {item.review_scores_rating}
                 </Text>
               </View>
             </View>
@@ -71,7 +92,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
-              <Text style={{ fontWeight: "500" }}>Rs {item.price}</Text>
+              <Text style={{ fontWeight: "500" }}>Rs {item.price * 50} </Text>
               <Text>/ night</Text>
             </View>
           </View>

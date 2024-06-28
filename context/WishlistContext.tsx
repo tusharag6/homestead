@@ -1,12 +1,26 @@
 import { ReactNode, createContext, useReducer } from "react";
 
 export interface WishlistItem {
-  id: string;
+  _id: string;
   name: string;
-  image_url: string;
-  review_scores_rating: number;
-  room_type: string;
+  description: string;
+  address: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  country: string;
+  house_rules: string;
+  listing_image_url: string;
+  amenities: [string];
   price: number;
+  review_scores_rating: number;
+  number_of_reviews: number;
+  room_type: string;
+  property_type: string;
+  accommodates: string;
+  __v: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface WishlistState {
@@ -38,7 +52,7 @@ export function wishlistReducer(
     case "REMOVE_ITEM":
       return {
         ...state,
-        items: state.items.filter((item) => item.id !== action.payload.id),
+        items: state.items.filter((item) => item._id !== action.payload.id),
       };
     default:
       throw new Error(`Unhandled action type:`);
