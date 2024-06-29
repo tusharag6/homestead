@@ -1,20 +1,25 @@
 import { View, StyleSheet, Text, Image } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { login } from "@/redux/authSlice";
+import { showToast } from "@/components/Toast";
 
 const Page = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.auth);
 
   const [formState, setFormState] = useState({
-    emailAddress: "",
+    email: "",
     password: "",
-    loading: false,
   });
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({
-    emailAddress: "",
+    email: "",
     password: "",
   });
 
@@ -24,20 +29,20 @@ const Page = () => {
   };
 
   const onSignInPress = async () => {
-    const { emailAddress, password } = formState;
+    const { email, password } = formState;
     let valid = true;
 
     // Validation checks
-    if (emailAddress === "") {
+    if (email === "") {
       setErrors((prev) => ({
         ...prev,
-        emailAddress: "Please enter your email address.",
+        email: "Please enter your email address.",
       }));
       valid = false;
-    } else if (!validateEmail(emailAddress)) {
+    } else if (!validateEmail(email)) {
       setErrors((prev) => ({
         ...prev,
-        emailAddress: "Please enter a valid email address.",
+        email: "Please enter a valid email address.",
       }));
       valid = false;
     }
@@ -52,27 +57,40 @@ const Page = () => {
 
     if (!valid) return;
 
-    setFormState({ ...formState, loading: true });
-    setErrors({ emailAddress: "", password: "" });
+    setFormState({ ...formState });
+    setErrors({ email: "", password: "" });
 
     try {
-      // API calls
-      console.log(emailAddress, password);
-      router.replace("/(tabs)/");
+      dispatch(login(formState))
+        .unwrap()
+        .then((response) => {
+          showToast("Login Successful");
+        })
+        .catch((error) => {
+          console.log("From login component", error.message);
+          showToast(error.message || "Login Failed");
+        });
+      router.replace("/(tabs)");
     } catch (error) {
       setErrors({
-        emailAddress: "",
+        email: "",
         password: "Something went wrong. Please try again.",
       });
     } finally {
-      setFormState({ ...formState, loading: false });
+      setFormState({ ...formState });
     }
   };
 
+  // useEffect(() => {
+  //   if (auth.isAuthenticated) {
+  //     router.replace("/(tabs)");
+  //   }
+  // }, [auth]);
+
   const handleEmailChange = (text: string) => {
-    setFormState((prev) => ({ ...prev, emailAddress: text }));
+    setFormState((prev) => ({ ...prev, email: text }));
     if (validateEmail(text)) {
-      setErrors((prev) => ({ ...prev, emailAddress: "" }));
+      setErrors((prev) => ({ ...prev, email: "" }));
     }
   };
 
@@ -93,8 +111,8 @@ const Page = () => {
       <View style={{ marginBottom: 20 }}>
         <Input
           placeholder="john@apple.com"
-          value={formState.emailAddress}
-          error={errors.emailAddress}
+          value={formState.email}
+          error={errors.email}
           onChangeText={handleEmailChange}
         />
         <Input
@@ -105,8 +123,8 @@ const Page = () => {
           onChangeText={handlePasswordChange}
         />
       </View>
-      <Button onPress={onSignInPress} disabled={formState.loading}>
-        {formState.loading ? "Signing In..." : "Sign In"}
+      <Button onPress={onSignInPress} disabled={loading}>
+        {loading ? "Signing In..." : "Sign In"}
       </Button>
     </View>
   );

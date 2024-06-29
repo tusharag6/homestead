@@ -5,6 +5,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { FilterProvider } from "@/context/FilterContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { Provider } from "react-redux";
+import { store } from "@/redux/store";
+import { RootSiblingParent } from "react-native-root-siblings";
+import { useAppSelector } from "@/redux/hooks";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,7 +38,11 @@ export default function RootLayout() {
   return (
     <WishlistProvider>
       <FilterProvider>
-        <RootLayoutNav />
+        <Provider store={store}>
+          <RootSiblingParent>
+            <RootLayoutNav />
+          </RootSiblingParent>
+        </Provider>
       </FilterProvider>
     </WishlistProvider>
   );
@@ -42,16 +50,15 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const router = useRouter();
-  const user = false;
-  const isLoaded = true;
+  const auth = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isLoaded && !user) {
+    if (!auth.isAuthenticated) {
       router.replace("/(routes)/onboarding");
     } else {
       router.replace("/(tabs)");
     }
-  }, [isLoaded]);
+  }, [auth]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

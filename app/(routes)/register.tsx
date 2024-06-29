@@ -3,19 +3,23 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { useAppDispatch } from "@/redux/hooks";
+import { register } from "@/redux/authSlice";
+import { showToast } from "@/components/Toast";
 
 const Page = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [formState, setFormState] = useState({
-    name: "",
-    emailAddress: "",
+    username: "",
+    email: "",
     password: "",
-    loading: false,
   });
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({
-    name: "",
-    emailAddress: "",
+    username: "",
+    email: "",
     password: "",
   });
 
@@ -31,25 +35,28 @@ const Page = () => {
   };
 
   const onSignUpPress = async () => {
-    const { name, emailAddress, password } = formState;
+    const { username, email, password } = formState;
     let valid = true;
 
     // Validation checks
-    if (name === "") {
-      setErrors((prev) => ({ ...prev, name: "Please enter your name." }));
+    if (username === "") {
+      setErrors((prev) => ({
+        ...prev,
+        username: "Please enter your username.",
+      }));
       valid = false;
     }
 
-    if (emailAddress === "") {
+    if (email === "") {
       setErrors((prev) => ({
         ...prev,
-        emailAddress: "Please enter your email address.",
+        email: "Please enter your email address.",
       }));
       valid = false;
-    } else if (!validateEmail(emailAddress)) {
+    } else if (!validateEmail(email)) {
       setErrors((prev) => ({
         ...prev,
-        emailAddress: "Please enter a valid email address.",
+        email: "Please enter a valid email address.",
       }));
       valid = false;
     }
@@ -71,35 +78,43 @@ const Page = () => {
 
     if (!valid) return;
 
-    setFormState({ ...formState, loading: true });
-    setErrors({ name: "", emailAddress: "", password: "" });
+    setFormState({ ...formState });
+    setErrors({ username: "", email: "", password: "" });
 
     try {
-      // API calls
-      console.log(name, emailAddress, password);
-      router.replace("/(tabs)/");
+      dispatch(register(formState))
+        .unwrap()
+        .then((response) => {
+          showToast("Register Successful");
+        })
+        .catch((error) => {
+          console.log("From register component", error.message);
+          showToast(error.message || "Login Failed");
+        });
+
+      router.replace("/(routes)/login");
     } catch (error) {
       setErrors({
-        name: "",
-        emailAddress: "",
+        username: "",
+        email: "",
         password: "Something went wrong. Please try again.",
       });
     } finally {
-      setFormState({ ...formState, loading: false });
+      setFormState({ ...formState });
     }
   };
 
-  const handleNameChange = (text: string) => {
-    setFormState((prev) => ({ ...prev, name: text }));
+  const handleusernameChange = (text: string) => {
+    setFormState((prev) => ({ ...prev, username: text }));
     if (text.length > 0) {
-      setErrors((prev) => ({ ...prev, name: "" }));
+      setErrors((prev) => ({ ...prev, username: "" }));
     }
   };
 
   const handleEmailChange = (text: string) => {
-    setFormState((prev) => ({ ...prev, emailAddress: text }));
+    setFormState((prev) => ({ ...prev, email: text }));
     if (validateEmail(text)) {
-      setErrors((prev) => ({ ...prev, emailAddress: "" }));
+      setErrors((prev) => ({ ...prev, email: "" }));
     }
   };
 
@@ -120,14 +135,14 @@ const Page = () => {
       <View style={{ marginBottom: 20 }}>
         <Input
           placeholder="John Doe"
-          value={formState.name}
-          error={errors.name}
-          onChangeText={handleNameChange}
+          value={formState.username}
+          error={errors.username}
+          onChangeText={handleusernameChange}
         />
         <Input
           placeholder="john@apple.com"
-          value={formState.emailAddress}
-          error={errors.emailAddress}
+          value={formState.email}
+          error={errors.email}
           onChangeText={handleEmailChange}
         />
         <Input
@@ -138,8 +153,8 @@ const Page = () => {
           onChangeText={handlePasswordChange}
         />
       </View>
-      <Button onPress={onSignUpPress} disabled={formState.loading}>
-        {formState.loading ? "Signing Up..." : "Sign Up"}
+      <Button onPress={onSignUpPress} disabled={loading}>
+        {loading ? "Signing Up..." : "Sign Up"}
       </Button>
     </View>
   );
