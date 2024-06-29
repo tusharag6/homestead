@@ -8,6 +8,7 @@ import React, {
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import ListingCard from "@/components/ListingCard";
 import FilterContext from "@/context/FilterContext";
+import ListingLoader from "./ListingLoader";
 
 export const mockData = [
   {
@@ -139,9 +140,13 @@ const Listings: React.FC = () => {
         onEndReached={() => {
           fetchListings(false);
         }}
-        onEndReachedThreshold={1}
+        // onEndReachedThreshold={1}
         ListFooterComponent={
-          loading ? <ActivityIndicator size="large" /> : null
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ListingLoader />
+            </View>
+          ) : null
         }
       />
     </View>
@@ -151,6 +156,10 @@ const Listings: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
   },
 });
 
