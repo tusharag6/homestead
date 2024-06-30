@@ -22,10 +22,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clearCredentials } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
+import { useLogoutMutation } from "@/redux/authApi";
 
 const Profile = () => {
   const [image, setImage] = useState<string | null>(null);
   const dispatch = useDispatch();
+  const [logout, { isLoading }] = useLogoutMutation();
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -48,11 +50,17 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("accessToken");
-      await AsyncStorage.removeItem("refreshToken");
-      await AsyncStorage.removeItem("user");
-      dispatch(clearCredentials());
-    } catch (error) {}
+      const token = (await AsyncStorage.getItem("token")) || "";
+      await logout(token).unwrap();
+    } catch (error: any) {
+      // console.log("Error from logout", error);
+      // if some error manually logout the user
+      if (error.status === 401) {
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+        dispatch(clearCredentials());
+      }
+    }
   };
 
   return (

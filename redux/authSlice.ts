@@ -4,8 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isAuthenticated: false,
   user: null,
-  accessToken: null,
-  refreshToken: null,
+  token: null,
 };
 
 export const authSlice = createSlice({
@@ -15,14 +14,12 @@ export const authSlice = createSlice({
     setCredentials: (state, action) => {
       state.isAuthenticated = true;
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      state.token = action.payload.token;
     },
     clearCredentials: (state) => {
       state.isAuthenticated = false;
       state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
+      state.token = null;
     },
   },
 });
@@ -32,10 +29,9 @@ export const initializeAuthState =
   async (
     dispatch: (arg0: { payload: any; type: "auth/setCredentials" }) => void
   ) => {
-    const { refreshToken, accessToken, user } =
-      await loadUserFromAsyncStorage();
-    if (refreshToken && accessToken && user) {
-      dispatch(setCredentials({ user, accessToken, refreshToken }));
+    const { token, user } = await loadUserFromAsyncStorage();
+    if (token && user) {
+      dispatch(setCredentials({ user, token }));
     }
   };
 
