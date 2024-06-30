@@ -113,8 +113,8 @@ const Page = () => {
           onChangeText={handlePasswordChange}
         />
       </View>
-      <Button onPress={onSignInPress} disabled={loading}>
-        {loading ? "Signing In..." : "Sign In"}
+      <Button onPress={onSignInPress} disabled={isLoading}>
+        {isLoading ? "Signing In..." : "Sign In"}
       </Button>
     </View>
   );

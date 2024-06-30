@@ -1,24 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearCredentials, setCredentials } from "./authSlice";
+import { apiSlice } from "./apiSlice";
 
-const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://192.168.1.10:5000/api/v1/user",
-    prepareHeaders: async (headers) => {
-      const token = await AsyncStorage.getItem("token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
-
+const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (crendentials) => ({
-        url: "/login",
+        url: "/user/login",
         method: "POST",
         body: crendentials,
       }),
@@ -36,14 +25,14 @@ const authApi = createApi({
     }),
     register: builder.mutation({
       query: (crendentials) => ({
-        url: "/register",
+        url: "/user/register",
         method: "POST",
         body: crendentials,
       }),
     }),
     logout: builder.mutation({
       query: (token: string) => ({
-        url: "/logout",
+        url: "/user/logout",
         method: "POST",
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {

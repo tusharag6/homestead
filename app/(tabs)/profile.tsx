@@ -55,11 +55,11 @@ const Profile = () => {
     } catch (error: any) {
       // console.log("Error from logout", error);
       // if some error manually logout the user
-      if (error.status === 401) {
-        await AsyncStorage.removeItem("token");
-        await AsyncStorage.removeItem("user");
-        dispatch(clearCredentials());
-      }
+      // if (error.status === 401) {
+      //   await AsyncStorage.removeItem("token");
+      //   await AsyncStorage.removeItem("user");
+      //   dispatch(clearCredentials());
+      // }
     }
   };
 
