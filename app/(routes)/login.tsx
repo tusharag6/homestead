@@ -3,14 +3,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { login } from "@/redux/authSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { showToast } from "@/components/Toast";
+import { useLoginMutation } from "@/redux/authApi";
 
 const Page = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const [formState, setFormState] = useState({
     email: "",
@@ -61,31 +62,20 @@ const Page = () => {
     setErrors({ email: "", password: "" });
 
     try {
-      dispatch(login(formState))
-        .unwrap()
-        .then((response) => {
-          showToast("Login Successful");
-        })
-        .catch((error) => {
-          console.log("From login component", error.message);
-          showToast(error.message || "Login Failed");
-        });
-      router.replace("/(tabs)");
-    } catch (error) {
-      setErrors({
-        email: "",
-        password: "Something went wrong. Please try again.",
-      });
+      await login(formState).unwrap();
+      showToast("Login Successful");
+    } catch (error: any) {
+      showToast(error.data.message || "Login Failed");
     } finally {
       setFormState({ ...formState });
     }
   };
 
-  // useEffect(() => {
-  //   if (auth.isAuthenticated) {
-  //     router.replace("/(tabs)");
-  //   }
-  // }, [auth]);
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      router.replace("/(tabs)");
+    }
+  }, [auth]);
 
   const handleEmailChange = (text: string) => {
     setFormState((prev) => ({ ...prev, email: text }));

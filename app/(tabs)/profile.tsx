@@ -19,9 +19,13 @@ import { Link } from "expo-router";
 
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { clearCredentials } from "@/redux/authSlice";
+import { useDispatch } from "react-redux";
 
 const Profile = () => {
   const [image, setImage] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,11 +41,18 @@ const Profile = () => {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("refreshToken");
+      await AsyncStorage.removeItem("user");
+      dispatch(clearCredentials());
+    } catch (error) {}
   };
 
   return (
@@ -263,7 +274,9 @@ const Profile = () => {
 
         {/* Logout */}
         <View style={styles.logoutButton}>
-          <Button variant="destructive">Logout</Button>
+          <Button variant="destructive" onPress={handleLogout}>
+            Logout
+          </Button>
         </View>
       </SafeAreaView>
     </ScrollView>

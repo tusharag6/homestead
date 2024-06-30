@@ -4,12 +4,14 @@ import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { useAppDispatch } from "@/redux/hooks";
-import { register } from "@/redux/authSlice";
 import { showToast } from "@/components/Toast";
+import { useRegisterMutation } from "@/redux/authApi";
 
 const Page = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [register, { isLoading }] = useRegisterMutation();
+
   const [formState, setFormState] = useState({
     username: "",
     email: "",
@@ -82,23 +84,11 @@ const Page = () => {
     setErrors({ username: "", email: "", password: "" });
 
     try {
-      dispatch(register(formState))
-        .unwrap()
-        .then((response) => {
-          showToast("Register Successful");
-        })
-        .catch((error) => {
-          console.log("From register component", error.message);
-          showToast(error.message || "Login Failed");
-        });
-
-      router.replace("/(routes)/login");
-    } catch (error) {
-      setErrors({
-        username: "",
-        email: "",
-        password: "Something went wrong. Please try again.",
-      });
+      await register(formState).unwrap();
+      showToast("Registration Successful! Please Login.");
+      router.replace("(routes)/login");
+    } catch (error: any) {
+      showToast(error.data.message || "Registration Failed");
     } finally {
       setFormState({ ...formState });
     }
