@@ -50,18 +50,20 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
               <Text style={{ fontWeight: "500", fontSize: 16 }}>
                 {item.name}
               </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingLeft: 6,
-                }}
-              >
-                <Ionicons name="star" size={16} color="#FFD700" />
-                <Text style={{ fontWeight: "500", marginLeft: 3 }}>
-                  {item.review_scores_rating}
-                </Text>
-              </View>
+              {!isGridMode && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingLeft: 6,
+                  }}
+                >
+                  <Ionicons name="star" size={16} color="#FFD700" />
+                  <Text style={{ fontWeight: "500", marginLeft: 3 }}>
+                    {item.review_scores_rating}
+                  </Text>
+                </View>
+              )}
             </View>
             <Text>{item.room_type}</Text>
             <View
