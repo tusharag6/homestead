@@ -19,6 +19,8 @@ import {
 import { format } from "date-fns";
 import { useFetchListingByIdQuery } from "@/redux/listingApi";
 import ListingLoader from "@/components/ListingLoader";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setBookingDetails } from "@/redux/bookingSlice";
 
 registerTranslation("en", en);
 
@@ -35,6 +37,8 @@ const DetailsPage = () => {
     error,
   } = useFetchListingByIdQuery(id as string);
   const navigation = useNavigation();
+
+  const dispatch = useAppDispatch();
 
   const [range, setRange] = useState<DateRange>({
     startDate: undefined,
@@ -58,6 +62,17 @@ const DetailsPage = () => {
     },
     [setRange]
   );
+
+  const handleReserve = () => {
+    const payload = {
+      listing: listing?.data,
+      numberOfGuests: 1,
+      numberOfDays: 1,
+      startDate: range.startDate?.toISOString(),
+      endDate: range.endDate?.toISOString(),
+    };
+    dispatch(setBookingDetails(payload));
+  };
 
   useLayoutEffect(() => {
     if (listing?.data) {
@@ -244,7 +259,7 @@ const DetailsPage = () => {
               </View>
 
               <Link href={`(routes)/booking/${id}`} asChild>
-                <Button>Reserve</Button>
+                <Button onPress={handleReserve}>Reserve</Button>
               </Link>
             </View>
           </View>

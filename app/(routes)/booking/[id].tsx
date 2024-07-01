@@ -1,15 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
-import { mockData as listingsData } from "@/components/Listings";
 import colors from "@/constants/Colors";
 import Button from "@/components/Button";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { format } from "date-fns";
+import { setBookingDetails, setBookingTotal } from "@/redux/bookingSlice";
+import Input from "@/components/Input";
 
 const Booking = () => {
-  const { id } = useLocalSearchParams();
-  const listing = listingsData.find((item) => item.id === id);
+  const listing = useAppSelector((state) => state.booking.listing);
+  const startDate = useAppSelector((state) => state.booking.startDate);
+  const endDate = useAppSelector((state) => state.booking.endDate);
+  const numberOfGuests = useAppSelector(
+    (state) => state.booking.numberOfGuests
+  );
+  const numberOfDays = useAppSelector((state) => state.booking.numberOfDays);
+  const dispatch = useAppDispatch();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [input, setInput] = useState(numberOfGuests.toString());
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [listing, startDate, endDate, numberOfGuests, numberOfDays]);
+
+  const calculateTotalPrice = () => {
+    if (listing && startDate && endDate) {
+      const pricePerNight = listing.price;
+      const totalGuests = numberOfGuests;
+      const nights = numberOfDays;
+
+      const totalPriceWithoutTax = pricePerNight * totalGuests * nights;
+      const taxes = 50;
+      const totalPrice = totalPriceWithoutTax + taxes;
+      setTotalPrice(totalPrice);
+      dispatch(setBookingTotal(totalPrice));
+    }
+  };
+
+  const handleGuestSubmit = () => {
+    const parsedGuests = parseInt(input, 10);
+
+    if (!isNaN(parsedGuests)) {
+      const payload = {
+        listing: listing,
+        numberOfGuests: parsedGuests,
+        numberOfDays: numberOfDays,
+        startDate: startDate,
+        endDate: endDate,
+      };
+      dispatch(setBookingDetails(payload));
+    }
+    setIsEditing(false);
+  };
 
   if (!listing) {
     return (
@@ -19,17 +64,33 @@ const Booking = () => {
     );
   }
 
+  const formatDate = (date: Date | undefined) => {
+    return date ? format(date, "MMM d") : "";
+  };
+
+  const selectedDates =
+    startDate && endDate
+      ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+      : "Select dates";
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.contentContainer}>
         <View style={styles.listingDetailsContainer}>
-          <Image source={{ uri: listing.image_url }} style={styles.image} />
+          <Image
+            source={{ uri: listing.listing_image_url }}
+            style={styles.image}
+          />
           <View style={styles.listingTextContainer}>
             <Text style={styles.name}>{listing.name}</Text>
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={14} color="black" />
-              <Text style={styles.ratingText}>4.95</Text>
-              <Text style={styles.reviewCountText}>(22)</Text>
+              <Text style={styles.ratingText}>
+                {listing.review_scores_rating}
+              </Text>
+              <Text style={styles.reviewCountText}>
+                ({listing.number_of_reviews})
+              </Text>
             </View>
           </View>
         </View>
@@ -39,20 +100,60 @@ const Booking = () => {
           <View style={styles.detailItem}>
             <View style={styles.detailValueContainer}>
               <Text style={styles.detailLabel}>Dates</Text>
-              <Text style={styles.detailValue}>Aug 1 - 2</Text>
+              <Text style={styles.detailValue}>{selectedDates}</Text>
             </View>
-            <TouchableOpacity>
-              <Text style={styles.editText}>Edit</Text>
-            </TouchableOpacity>
+            <Button variant="ghost" size="sm" textStyle={styles.editText}>
+              Edit
+            </Button>
           </View>
           <View style={styles.detailItem}>
             <View style={styles.detailValueContainer}>
               <Text style={styles.detailLabel}>Guests</Text>
-              <Text style={styles.detailValue}>1 Guest</Text>
+              {isEditing ? (
+                <Input
+                  style={styles.detailValue}
+                  value={input}
+                  onChangeText={(text: string) => {
+                    setInput(text);
+                  }}
+                  keyboardType="numeric"
+                  returnKeyType="done"
+                  autoFocus
+                />
+              ) : (
+                <Text style={styles.detailValue}>{numberOfGuests} Guest</Text>
+              )}
             </View>
-            <TouchableOpacity>
-              <Text style={styles.editText}>Edit</Text>
-            </TouchableOpacity>
+            {isEditing ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                textStyle={styles.editText}
+                onPress={handleGuestSubmit}
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                textStyle={styles.editText}
+                onPress={() => {
+                  setIsEditing((prev) => !prev);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+          </View>
+          <View style={styles.detailItem}>
+            <View style={styles.detailValueContainer}>
+              <Text style={styles.detailLabel}>Days</Text>
+              <Text style={styles.detailValue}>{numberOfDays} day(s)</Text>
+            </View>
+            <Button variant="ghost" size="sm" textStyle={styles.editText}>
+              Edit
+            </Button>
           </View>
         </View>
 
@@ -60,17 +161,19 @@ const Booking = () => {
           <Text style={styles.sectionTitle}>Your Total</Text>
           <View style={{ marginBottom: 5 }}>
             <View style={styles.priceDetailItem}>
-              <Text style={styles.priceDetailLabel}>1 night</Text>
-              <Text style={styles.priceDetailValue}>Rs 780.67</Text>
+              <Text style={styles.priceDetailLabel}>{numberOfDays} day(s)</Text>
+              <Text style={styles.priceDetailValue}>
+                Rs {listing.price * numberOfGuests * numberOfDays}
+              </Text>
             </View>
             <View style={styles.priceDetailItem}>
               <Text style={styles.priceDetailLabel}>Taxes</Text>
-              <Text style={styles.priceDetailValue}>Rs 54.25</Text>
+              <Text style={styles.priceDetailValue}>Rs 50</Text>
             </View>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceLabel}>Total</Text>
-            <Text style={styles.totalPriceValue}>Rs 834.92</Text>
+            <Text style={styles.totalPriceValue}>Rs {totalPrice}</Text>
           </View>
         </View>
       </View>

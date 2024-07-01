@@ -67,6 +67,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="(routes)/booking/[id]"
         options={{
+          headerShown: true,
           title: "Confirm your booking",
           headerTitleStyle: {
             fontFamily: "mon-sb",
@@ -74,9 +75,18 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(routes)/listing/[id]"
+        options={{
+          headerShown: true,
+          title: "",
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
         name="(modals)/filter"
         options={{
           presentation: "modal",
+          headerShown: true,
           title: "Filters",
           headerTitleStyle: {
             fontFamily: "mon-sb",
@@ -95,6 +105,7 @@ function RootLayoutNav() {
         name="(modals)/personal"
         options={{
           presentation: "modal",
+          headerShown: true,
           title: "Personal Information",
           headerTitleStyle: {
             fontFamily: "mon-sb",

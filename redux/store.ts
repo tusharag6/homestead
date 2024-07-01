@@ -1,18 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer, { initializeAuthState } from "./authSlice";
-import authApi from "./authApi";
-import listingReducer from "./listingSlice";
-import listingApi from "./listingApi";
+import bookingReducer from "./bookingSlice";
 import { apiSlice } from "./apiSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    listing: listingReducer,
+    booking: bookingReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredPaths: ["payload.startDate", "payload.endDate"],
+      },
+    }).concat(apiSlice.middleware),
 });
 
 store.dispatch(initializeAuthState());
