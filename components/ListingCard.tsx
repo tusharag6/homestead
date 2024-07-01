@@ -16,7 +16,7 @@ interface ListingCardProps {
     country: string;
     house_rules: string;
     listing_image_url: string;
-    amenities: [string];
+    amenities: string[];
     price: number;
     review_scores_rating: number;
     number_of_reviews: number;
@@ -44,7 +44,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
     if (isInWishlist) {
       dispatch({ type: "REMOVE_ITEM", payload: { id: item._id } });
     } else {
-      dispatch({ type: "ADD_ITEM", payload: item });
+      // dispatch({ type: "ADD_ITEM", payload: item });
     }
   };
 
