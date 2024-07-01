@@ -1,34 +1,12 @@
+import { Listing } from "@/types";
 import { ReactNode, createContext, useReducer } from "react";
 
-export interface WishlistItem {
-  _id: string;
-  name: string;
-  description: string;
-  address: string;
-  city: string;
-  state: string;
-  zipcode: string;
-  country: string;
-  house_rules: string;
-  listing_image_url: string;
-  amenities: [string];
-  price: number;
-  review_scores_rating: number;
-  number_of_reviews: number;
-  room_type: string;
-  property_type: string;
-  accommodates: string;
-  __v: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface WishlistState {
-  items: WishlistItem[];
+  items: Listing[];
 }
 
 export type WishlistAction =
-  | { type: "ADD_ITEM"; payload: WishlistItem }
+  | { type: "ADD_ITEM"; payload: Listing }
   | { type: "REMOVE_ITEM"; payload: { id: string } };
 
 export interface WishlistContextProps {

@@ -1,5 +1,5 @@
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { mockData as listingsData } from "@/components/Listings";
 import colors from "@/constants/Colors";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import Button from "@/components/Button";
@@ -18,6 +17,8 @@ import {
   en,
 } from "react-native-paper-dates";
 import { format } from "date-fns";
+import { useFetchListingByIdQuery } from "@/redux/listingApi";
+import ListingLoader from "@/components/ListingLoader";
 
 registerTranslation("en", en);
 
@@ -28,8 +29,11 @@ interface DateRange {
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams();
-  const listing = listingsData.find((item) => item.id === id);
-
+  const {
+    data: listing,
+    isFetching,
+    error,
+  } = useFetchListingByIdQuery(id as string);
   const navigation = useNavigation();
 
   const [range, setRange] = useState<DateRange>({
@@ -55,39 +59,33 @@ const DetailsPage = () => {
     [setRange]
   );
 
-  if (!listing) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Listing not found</Text>
-      </View>
-    );
-  }
-
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: "",
-      headerTransparent: true,
-      headerBackground: () => <View style={[styles.header]}></View>,
-      headerRight: () => (
-        <View style={styles.bar}>
-          <TouchableOpacity style={styles.roundButton}>
-            <Ionicons name="share-outline" size={22} color={"#000"} />
+    if (listing?.data) {
+      navigation.setOptions({
+        headerTitle: "",
+        headerTransparent: true,
+        headerBackground: () => <View style={[styles.header]}></View>,
+        headerRight: () => (
+          <View style={styles.bar}>
+            <TouchableOpacity style={styles.roundButton}>
+              <Ionicons name="share-outline" size={22} color={"#000"} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.roundButton}>
+              <Ionicons name="heart-outline" size={22} color={"#000"} />
+            </TouchableOpacity>
+          </View>
+        ),
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.roundButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="chevron-back" size={24} color={"#000"} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.roundButton}>
-            <Ionicons name="heart-outline" size={22} color={"#000"} />
-          </TouchableOpacity>
-        </View>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          style={styles.roundButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={"#000"} />
-        </TouchableOpacity>
-      ),
-    });
-  }, []);
+        ),
+      });
+    }
+  }, [listing?.data]);
 
   const formatDate = (date: Date | undefined) => {
     return date ? format(date, "MMM d") : "";
@@ -100,136 +98,162 @@ const DetailsPage = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
-      >
-        <Image source={{ uri: listing.image_url }} style={styles.image} />
-        <View style={styles.container}>
-          <Text style={styles.name}>{listing.name}</Text>
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={16} color="black" />
-            <Text style={styles.ratingText}>
-              {(listing.review_scores_rating / 20).toFixed(1)}
-            </Text>
-            <Text style={styles.reviewCountText}>· 22 reviews</Text>
-          </View>
-          <Text style={styles.locationText}>
-            Nantes, Pays da le Loire, France
-          </Text>
+      {isFetching ? (
+        <View style={styles.loadingContainer}>
+          <ListingLoader />
         </View>
-
-        <View style={styles.container}>
-          <Text style={styles.sectionTitle}>About this place</Text>
-          <Text style={styles.descriptionText}>
-            Enjoy an elegant private room of 20m2 in a renovated apartment of
-            160 m2 in the heart of the city center of Nantes in the Graslin
-            district. The charm of the old renovated: ceiling height of 3.60m,
-            period parquet, black marble fireplace, comfortable bathroom.
-          </Text>
-        </View>
-
-        <View style={styles.container}>
-          <Text style={styles.sectionTitle}>What this place offers</Text>
-          <View style={styles.amenitiesContainer}>
-            <View style={styles.amenityItem}>
-              <Ionicons name="camera-outline" size={24} color="black" />
-              <Text style={styles.amenityText}>
-                Security cameras on property
-              </Text>
+      ) : !error ? (
+        <View style={styles.mainContainer}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollViewContent}
+          >
+            <Image
+              source={{ uri: listing?.data?.listing_image_url }}
+              style={styles.image}
+            />
+            <View style={styles.container}>
+              <Text style={styles.name}>{listing?.data?.name}</Text>
+              <View style={styles.ratingContainer}>
+                <Ionicons name="star" size={16} color="black" />
+                <Text style={styles.ratingText}>
+                  {listing?.data?.review_scores_rating}
+                </Text>
+                <Text style={styles.reviewCountText}>
+                  · {listing?.data.number_of_reviews} reviews
+                </Text>
+              </View>
+              <Text style={styles.locationText}>{listing?.data.address}</Text>
             </View>
-            <View style={styles.amenityItem}>
-              <Ionicons name="wifi-outline" size={24} color="black" />
-              <Text style={styles.amenityText}>Wifi</Text>
-            </View>
-          </View>
-          <Button variant="outline">Show all amenities</Button>
-        </View>
 
-        <View style={styles.container}>
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={18} color="black" />
-            <Text style={styles.ratingText}>
-              {(listing.review_scores_rating / 20).toFixed(1)}
-            </Text>
-            <Text style={styles.reviewCountText}>· 22 reviews</Text>
-          </View>
-          <View style={styles.reviewContainer}>
-            <Text style={styles.reviewText}>
-              While travelling for work, I stopped for one night at Golwen &
-              Dorothee place. It feels great in this unit, enough to recharge
-              the ...
-            </Text>
-            <View style={styles.reviewerContainer}>
-              <FontAwesome name="user-circle" size={24} color="black" />
-              <View style={styles.reviewerDetails}>
-                <Text style={styles.reviewerName}>Margot</Text>
-                <Text style={styles.reviewDate}>4 months ago</Text>
+            {/* Description */}
+            <View style={styles.container}>
+              <Text style={styles.sectionTitle}>About this place</Text>
+              <View style={styles.rulesContainer}>
+                {listing?.data.description.split(".").map((desc, index) => {
+                  if (desc.trim() === "") return null;
+                  return (
+                    <View key={index} style={styles.ruleWrapper}>
+                      <Text style={styles.ruleText}>{desc.trim()}.</Text>
+                    </View>
+                  );
+                })}
               </View>
             </View>
-          </View>
-          <Button variant="outline">Show all reviews</Button>
-        </View>
 
-        <View style={styles.container}>
-          <Text style={styles.sectionTitle}>House rules</Text>
-          <Text style={styles.ruleText}>Check-in: 6:00 PM - 11:00 PM</Text>
-          <Text style={styles.ruleText}>Checkout before 9:00 AM</Text>
-          <Text style={styles.ruleText}>2 guests maximum</Text>
-          <Text style={styles.ruleText}>
-            <Button
-              variant="link"
-              style={{ padding: 0 }}
-              textStyle={{ fontSize: 14 }}
-            >
-              Show more
-            </Button>
-          </Text>
-        </View>
-
-        <View style={styles.container}>
-          <Text style={styles.sectionTitle}>Cancellation rules</Text>
-          <Text style={styles.ruleText}>Free cancellation for 48 hours</Text>
-          <Text style={styles.ruleText}>This booking is non-refundable</Text>
-        </View>
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <View style={styles.footerText}>
-            <View style={{ display: "flex", flexDirection: "row" }}>
-              <Text style={styles.footerPrice}>Rs {listing.price}</Text>
-              <Text> / night</Text>
+            {/* Amenities */}
+            <View style={styles.container}>
+              <Text style={styles.sectionTitle}>What this place offers</Text>
+              <View style={styles.amenitiesContainer}>
+                <View style={styles.amenityItem}>
+                  <Ionicons name="camera-outline" size={24} color="black" />
+                  <Text style={styles.amenityText}>
+                    Security cameras on property
+                  </Text>
+                </View>
+                <View style={styles.amenityItem}>
+                  <Ionicons name="wifi-outline" size={24} color="black" />
+                  <Text style={styles.amenityText}>Wifi</Text>
+                </View>
+              </View>
+              <Button variant="outline">Show all amenities</Button>
             </View>
-            <View>
-              <Text style={styles.footerDate} onPress={() => setOpen(true)}>
-                {selectedDates}
+
+            {/* Reviews */}
+            <View style={styles.container}>
+              <View style={styles.ratingContainer}>
+                <Ionicons name="star" size={18} color="black" />
+                <Text style={styles.ratingText}>
+                  {listing?.data?.review_scores_rating}
+                </Text>
+                <Text style={styles.reviewCountText}>· 22 reviews</Text>
+              </View>
+              <View style={styles.reviewContainer}>
+                <Text style={styles.reviewText}>
+                  While travelling for work, I stopped for one night at Golwen &
+                  Dorothee place. It feels great in this unit, enough to
+                  recharge the ...
+                </Text>
+                <View style={styles.reviewerContainer}>
+                  <FontAwesome name="user-circle" size={24} color="black" />
+                  <View style={styles.reviewerDetails}>
+                    <Text style={styles.reviewerName}>Margot</Text>
+                    <Text style={styles.reviewDate}>4 months ago</Text>
+                  </View>
+                </View>
+              </View>
+              <Button variant="outline">Show all reviews</Button>
+            </View>
+
+            {/* Rules */}
+            <View style={styles.container}>
+              <Text style={styles.sectionTitle}>House rules</Text>
+              <View style={styles.rulesContainer}>
+                {listing?.data?.house_rules.split(".").map((rule, index) => {
+                  if (rule.trim() === "") return null; // Skip empty strings
+                  return (
+                    <View key={index} style={styles.ruleWrapper}>
+                      <Text style={styles.ruleText}>{rule.trim()}.</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={styles.container}>
+              <Text style={styles.sectionTitle}>Cancellation rules</Text>
+              <Text style={styles.ruleText}>
+                Free cancellation for 48 hours
               </Text>
-              <DatePickerModal
-                locale="en"
-                mode="range"
-                visible={open}
-                onDismiss={onDismiss}
-                startDate={range.startDate}
-                endDate={range.endDate}
-                onConfirm={onClear}
-                onChange={onChange}
-                saveLabel="Clear Dates"
-              />
+              <Text style={styles.ruleText}>
+                This booking is non-refundable
+              </Text>
+            </View>
+          </ScrollView>
+          <View style={styles.footer}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View style={styles.footerText}>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <Text style={styles.footerPrice}>
+                    Rs {listing?.data?.price}
+                  </Text>
+                  <Text> / night</Text>
+                </View>
+                <View>
+                  <Text style={styles.footerDate} onPress={() => setOpen(true)}>
+                    {selectedDates}
+                  </Text>
+                  <DatePickerModal
+                    locale="en"
+                    mode="range"
+                    visible={open}
+                    onDismiss={onDismiss}
+                    startDate={range.startDate}
+                    endDate={range.endDate}
+                    onConfirm={onClear}
+                    onChange={onChange}
+                    saveLabel="Clear Dates"
+                  />
+                </View>
+              </View>
+
+              <Link href={`(routes)/booking/${id}`} asChild>
+                <Button>Reserve</Button>
+              </Link>
             </View>
           </View>
-
-          <Link href={`(routes)/booking/${id}`} asChild>
-            <Button>Reserve</Button>
-          </Link>
         </View>
-      </View>
+      ) : (
+        <View style={styles.container}>
+          <Text style={styles.errorText}>Error</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -238,6 +262,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
   },
   scrollView: {
     flex: 1,
@@ -257,8 +285,8 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    fontWeight: "500",
     marginVertical: 8,
+    fontFamily: "mon-sb",
   },
   ratingContainer: {
     flexDirection: "row",
@@ -268,24 +296,28 @@ const styles = StyleSheet.create({
   ratingText: {
     marginLeft: 4,
     fontSize: 18,
+    fontFamily: "mon",
   },
   reviewCountText: {
     marginLeft: 4,
     fontSize: 18,
+    fontFamily: "mon",
   },
   locationText: {
     fontSize: 16,
     color: colors.light.secondaryForeground,
     marginVertical: 4,
+    fontFamily: "mon",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "500",
+    fontFamily: "mon-sb",
     marginVertical: 8,
   },
   descriptionText: {
     fontSize: 16,
     lineHeight: 24,
+    fontFamily: "mon",
     color: colors.light.secondaryForeground,
   },
   amenitiesContainer: {
@@ -299,6 +331,7 @@ const styles = StyleSheet.create({
   amenityText: {
     marginLeft: 8,
     fontSize: 16,
+    fontFamily: "mon",
   },
   reviewContainer: {
     marginVertical: 8,
@@ -311,6 +344,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: colors.light.secondaryForeground,
+    fontFamily: "mon",
   },
   reviewerContainer: {
     flexDirection: "row",
@@ -322,14 +356,22 @@ const styles = StyleSheet.create({
   },
   reviewerName: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "mon-sb",
   },
   reviewDate: {
     fontSize: 12,
+    fontFamily: "mon",
     color: colors.light.secondaryForeground,
+  },
+  rulesContainer: {
+    marginTop: 8,
+  },
+  ruleWrapper: {
+    marginBottom: 8,
   },
   ruleText: {
     fontSize: 14,
+    fontFamily: "mon",
     marginVertical: 2,
   },
   errorText: {

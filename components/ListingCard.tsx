@@ -1,40 +1,18 @@
 import React, { useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useWishlist } from "@/hooks/useWishlist";
-
-interface ListingCardProps {
-  item: {
-    _id: string;
-    name: string;
-    description: string;
-    address: string;
-    city: string;
-    state: string;
-    zipcode: string;
-    country: string;
-    house_rules: string;
-    listing_image_url: string;
-    amenities: string[];
-    price: number;
-    review_scores_rating: number;
-    number_of_reviews: number;
-    room_type: string;
-    property_type: string;
-    accommodates: string;
-    __v: number;
-    createdAt: string;
-    updatedAt: string;
-  };
-  isGridMode: boolean;
-}
+import { ListingCardProps } from "@/types";
 
 const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
-  useEffect(() => {
-    console.log("use effect card");
-  }, [item]);
-
   const { state, dispatch } = useWishlist();
   const isInWishlist = state.items.some(
     (wishlistItem) => wishlistItem._id === item._id
@@ -44,7 +22,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
     if (isInWishlist) {
       dispatch({ type: "REMOVE_ITEM", payload: { id: item._id } });
     } else {
-      // dispatch({ type: "ADD_ITEM", payload: item });
+      dispatch({ type: "ADD_ITEM", payload: item });
     }
   };
 
@@ -58,7 +36,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
         />
       </TouchableOpacity>
       <Link href={`(routes)/listing/${item._id}`} asChild>
-        <TouchableOpacity>
+        <Pressable>
           <View style={styles.listing}>
             <View style={styles.imageContainer}>
               <Image
@@ -89,11 +67,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ item, isGridMode }) => {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
-              <Text style={{ fontWeight: "500" }}>Rs {item.price * 50} </Text>
+              <Text style={{ fontWeight: "500" }}>Rs {item.price} </Text>
               <Text>/ night</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Link>
     </View>
   );

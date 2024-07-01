@@ -1,18 +1,5 @@
-import { Listing } from "@/types";
+import { FetchListingsByIdResponse, FetchListingsResponse } from "@/types";
 import { apiSlice } from "./apiSlice";
-
-interface FetchListingsResponse {
-  data: {
-    listings: Listing[];
-    next: {
-      page: number;
-      limit: number;
-    };
-  };
-  message: string;
-  statusCode: number;
-  success: boolean;
-}
 
 interface FetchListingsParams {
   page: number;
@@ -24,9 +11,12 @@ const listingApi = apiSlice.injectEndpoints({
     fetchListings: builder.query<FetchListingsResponse, FetchListingsParams>({
       query: ({ page, limit }) => `/listings/all?page=${page}&limit=${limit}`,
     }),
+    fetchListingById: builder.query<FetchListingsByIdResponse, string>({
+      query: (id) => `/listings/${id}`,
+    }),
   }),
 });
 
-export const { useFetchListingsQuery } = listingApi;
+export const { useFetchListingsQuery, useFetchListingByIdQuery } = listingApi;
 
 export default listingApi;
