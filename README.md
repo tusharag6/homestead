@@ -2,6 +2,8 @@
 
 Homestead is a mobile application built with React Native that allows users to list, discover, and book accommodations.
 
+Backend Code : https://github.com/tusharag6/homestead-api
+
 ## Screenshots
 
 ### Onboarding Screen
@@ -21,7 +23,20 @@ Homestead is a mobile application built with React Native that allows users to l
 
 <div style="display: flex; flex-wrap: wrap;">
   <img src="assets/screenshots/listing.jpg" alt="Listing Screen" width="30%" style="margin-right:10px">
-  <img src="assets/screenshots/listing-detail.jpg" alt="Details Screen" width="30%" style="margin-right:10px">
+  <img src="assets/screenshots/listing-details.jpg" alt="Details Screen" width="30%" style="margin-right:10px">
+</div>
+
+### Confirm Booking
+
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="assets/screenshots/confirm-booking.jpg" alt="Confirm Booking" width="30%" style="margin-right:10px">
+</div>
+
+### Profile
+
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="assets/screenshots/profile.jpg" alt="Profile" width="30%" style="margin-right:10px">
+    <img src="assets/screenshots/edit-profile.jpg" alt="Edit Profile" width="30%" style="margin-right:10px">
 </div>
 
 ## Installation
