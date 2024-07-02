@@ -58,6 +58,14 @@ function RootLayoutNav() {
     } else {
       router.replace("/(tabs)");
     }
+  }, []);
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      router.replace("/(routes)/onboarding");
+    } else {
+      router.replace("/(tabs)");
+    }
   }, [auth]);
 
   return (

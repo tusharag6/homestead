@@ -8,7 +8,7 @@ import { Listing } from "@/types";
 
 const Listings: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const filterContext = useContext(FilterContext);
 
   const { data, isFetching } = useFetchListingsQuery({
@@ -40,7 +40,10 @@ const Listings: React.FC = () => {
         key={isGridMode ? "grid" : "list"}
         onEndReachedThreshold={1}
         onEndReached={() => {
-          setPage(page + 1);
+          if (data?.data.next?.page != undefined) {
+            setPage(data?.data.next.page);
+          }
+          return null;
         }}
         ListFooterComponent={
           isFetching ? (
