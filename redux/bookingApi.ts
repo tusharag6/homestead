@@ -5,7 +5,7 @@ const bookingApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     confirmReservation: builder.mutation({
       query: (payload) => ({
-        url: "/reserve",
+        url: "/bookings/reserve",
         method: "POST",
         body: payload,
       }),

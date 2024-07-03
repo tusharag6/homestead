@@ -21,6 +21,15 @@ export interface Listing {
   updatedAt: string;
 }
 
+export interface BookingState {
+  listing: Listing | null;
+  numberOfGuests: number;
+  numberOfDays: number;
+  startDate: Date | null;
+  endDate: Date | null;
+  price: number | null;
+}
+
 export interface ListingCardProps {
   item: {
     _id: string;

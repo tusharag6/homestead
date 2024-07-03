@@ -1,14 +1,5 @@
-import { Listing } from "@/types";
+import { BookingState, Listing } from "@/types";
 import { createSlice } from "@reduxjs/toolkit";
-
-interface BookingState {
-  listing: Listing | null;
-  numberOfGuests: number;
-  numberOfDays: number;
-  startDate: Date | null;
-  endDate: Date | null;
-  price: number | null;
-}
 
 const initialState: BookingState = {
   listing: null,

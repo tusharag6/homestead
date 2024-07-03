@@ -8,6 +8,9 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { format } from "date-fns";
 import { setBookingDetails, setBookingTotal } from "@/redux/bookingSlice";
 import Input from "@/components/Input";
+import { useConfirmReservationMutation } from "@/redux/bookingApi";
+import { showToast } from "@/components/Toast";
+import { useRouter } from "expo-router";
 
 const Booking = () => {
   const listing = useAppSelector((state) => state.booking.listing);
@@ -19,8 +22,12 @@ const Booking = () => {
   const numberOfDays = useAppSelector((state) => state.booking.numberOfDays);
   const dispatch = useAppDispatch();
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isGuestEditing, setIsGuestEditing] = useState(false);
+  const [isDayEditing, setIsDayEditing] = useState(false);
+
   const [input, setInput] = useState(numberOfGuests.toString());
+  const [reserve, { isLoading }] = useConfirmReservationMutation();
+  const router = useRouter();
 
   useEffect(() => {
     calculateTotalPrice();
@@ -50,10 +57,46 @@ const Booking = () => {
         numberOfDays: numberOfDays,
         startDate: startDate,
         endDate: endDate,
+        price: totalPrice,
       };
       dispatch(setBookingDetails(payload));
     }
-    setIsEditing(false);
+    setIsGuestEditing(false);
+  };
+
+  const handleDaySubmit = () => {
+    const parsedDay = parseInt(input, 10);
+
+    if (!isNaN(parsedDay)) {
+      const payload = {
+        listing: listing,
+        numberOfGuests: numberOfGuests,
+        numberOfDays: parsedDay,
+        startDate: startDate,
+        endDate: endDate,
+        price: totalPrice,
+      };
+      dispatch(setBookingDetails(payload));
+    }
+    setIsDayEditing(false);
+  };
+
+  const handleBooking = async () => {
+    const payload = {
+      listing: listing,
+      numberOfGuests: numberOfGuests,
+      numberOfDays: numberOfDays,
+      startDate: startDate,
+      endDate: endDate,
+      price: totalPrice,
+    };
+    try {
+      await reserve(payload).unwrap();
+      showToast("Booked your accomodation");
+      router.replace("/booking");
+    } catch (error: any) {
+      showToast(error.data.message || "Booking Failed");
+    }
   };
 
   if (!listing) {
@@ -109,7 +152,7 @@ const Booking = () => {
           <View style={styles.detailItem}>
             <View style={styles.detailValueContainer}>
               <Text style={styles.detailLabel}>Guests</Text>
-              {isEditing ? (
+              {isGuestEditing ? (
                 <Input
                   style={styles.detailValue}
                   value={input}
@@ -124,7 +167,7 @@ const Booking = () => {
                 <Text style={styles.detailValue}>{numberOfGuests} Guest</Text>
               )}
             </View>
-            {isEditing ? (
+            {isGuestEditing ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -139,7 +182,7 @@ const Booking = () => {
                 size="sm"
                 textStyle={styles.editText}
                 onPress={() => {
-                  setIsEditing((prev) => !prev);
+                  setIsGuestEditing((prev) => !prev);
                 }}
               >
                 Edit
@@ -149,11 +192,42 @@ const Booking = () => {
           <View style={styles.detailItem}>
             <View style={styles.detailValueContainer}>
               <Text style={styles.detailLabel}>Days</Text>
-              <Text style={styles.detailValue}>{numberOfDays} day(s)</Text>
+              {isDayEditing ? (
+                <Input
+                  style={styles.detailValue}
+                  value={input}
+                  onChangeText={(text: string) => {
+                    setInput(text);
+                  }}
+                  keyboardType="numeric"
+                  returnKeyType="done"
+                  autoFocus
+                />
+              ) : (
+                <Text style={styles.detailValue}>{numberOfDays} Day(s)</Text>
+              )}
             </View>
-            <Button variant="ghost" size="sm" textStyle={styles.editText}>
-              Edit
-            </Button>
+            {isDayEditing ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                textStyle={styles.editText}
+                onPress={handleDaySubmit}
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                textStyle={styles.editText}
+                onPress={() => {
+                  setIsDayEditing((prev) => !prev);
+                }}
+              >
+                Edit
+              </Button>
+            )}
           </View>
         </View>
 
@@ -179,7 +253,9 @@ const Booking = () => {
       </View>
 
       <View style={styles.footer}>
-        <Button>Continue</Button>
+        <Button onPress={handleBooking} disabled={isLoading}>
+          Confirm Your Booking
+        </Button>
       </View>
     </SafeAreaView>
   );
