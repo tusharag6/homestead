@@ -1,3 +1,4 @@
+import { FetchBookingResponse } from "@/types";
 import { apiSlice } from "./apiSlice";
 import { clearBookingDetails } from "./bookingSlice";
 
@@ -18,9 +19,13 @@ const bookingApi = apiSlice.injectEndpoints({
         } catch (error) {}
       },
     }),
+    fetchBooking: builder.query<FetchBookingResponse, void>({
+      query: () => `/bookings/user`,
+    }),
   }),
 });
 
-export const { useConfirmReservationMutation } = bookingApi;
+export const { useConfirmReservationMutation, useFetchBookingQuery } =
+  bookingApi;
 
 export default bookingApi;
