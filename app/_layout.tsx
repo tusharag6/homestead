@@ -91,6 +91,14 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(routes)/reservation/[id]"
+        options={{
+          headerShown: true,
+          title: "",
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
         name="(modals)/filter"
         options={{
           presentation: "modal",

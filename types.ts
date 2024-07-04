@@ -96,3 +96,22 @@ export interface FetchBookingResponse {
   message: string;
   success: boolean;
 }
+
+export interface FetchBookingByIdResponse {
+  data: {
+    _id: string;
+    numberOfGuests: number;
+    numberOfDays: number;
+    startDate: string;
+    endDate: string;
+    price: number | null;
+    listing: string;
+    user: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  message: string;
+  statusCode: number;
+  success: boolean;
+}

@@ -23,7 +23,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
 
   return (
     <View style={styles.booking}>
-      <Link href={`(routes)/listing/${booking.listing._id}`} asChild>
+      <Link href={`(routes)/reservation/${booking._id}`} asChild>
         <Pressable style={styles.pressable}>
           <View>
             <Image

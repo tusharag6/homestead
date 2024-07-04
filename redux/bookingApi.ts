@@ -1,4 +1,4 @@
-import { FetchBookingResponse } from "@/types";
+import { FetchBookingByIdResponse, FetchBookingResponse } from "@/types";
 import { apiSlice } from "./apiSlice";
 import { clearBookingDetails } from "./bookingSlice";
 
@@ -22,10 +22,16 @@ const bookingApi = apiSlice.injectEndpoints({
     fetchBooking: builder.query<FetchBookingResponse, void>({
       query: () => `/bookings/user`,
     }),
+    fetchBookingById: builder.query<FetchBookingByIdResponse, string>({
+      query: (id) => `/bookings/${id}`,
+    }),
   }),
 });
 
-export const { useConfirmReservationMutation, useFetchBookingQuery } =
-  bookingApi;
+export const {
+  useConfirmReservationMutation,
+  useFetchBookingQuery,
+  useFetchBookingByIdQuery,
+} = bookingApi;
 
 export default bookingApi;
