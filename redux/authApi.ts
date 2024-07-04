@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearCredentials, setCredentials } from "./authSlice";
 import { apiSlice } from "./apiSlice";
+import { FetchProfileResponse } from "@/types";
 
 const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -47,10 +48,17 @@ const authApi = apiSlice.injectEndpoints({
         } catch (error) {}
       },
     }),
+    fetchProfile: builder.query<FetchProfileResponse, void>({
+      query: () => "user/me",
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
-  authApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLogoutMutation,
+  useFetchProfileQuery,
+} = authApi;
 
 export default authApi;

@@ -1,7 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { useFetchBookingQuery } from "@/redux/bookingApi";
-import ListingCard from "@/components/ListingCard";
 import BookingCard from "@/components/BookingCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,11 +8,9 @@ const Booking = () => {
   const { data: bookings, isFetching } = useFetchBookingQuery();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <View>
-          <Text style={styles.screenHeader}>Your Bookings</Text>
-        </View>
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <View style={styles.container}>
+        <Text style={styles.screenHeader}>Your Bookings</Text>
         {!bookings || bookings.data.length === 0 ? (
           <View style={styles.body}>
             <Text style={styles.title}>No Bookings Found</Text>
@@ -27,6 +24,7 @@ const Booking = () => {
             data={bookings?.data}
             renderItem={({ item }) => <BookingCard booking={item} />}
             keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.list}
           />
         )}
       </View>
@@ -37,10 +35,13 @@ const Booking = () => {
 export default Booking;
 
 const styles = StyleSheet.create({
-  container: {
+  safeAreaContainer: {
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+  },
+  container: {
+    flex: 1,
   },
   screenHeader: {
     paddingVertical: 30,

@@ -22,12 +22,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clearCredentials } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
-import { useLogoutMutation } from "@/redux/authApi";
+import { useFetchProfileQuery, useLogoutMutation } from "@/redux/authApi";
 
 const Profile = () => {
   const [image, setImage] = useState<string | null>(null);
   const dispatch = useDispatch();
   const [logout, { isLoading }] = useLogoutMutation();
+
+  const { data: user, isFetching } = useFetchProfileQuery();
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -80,7 +82,7 @@ const Profile = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.profileDetails}>
-            <Text style={styles.profileName}>Tushar</Text>
+            <Text style={styles.profileName}>{user?.data.username}</Text>
             <TouchableOpacity>
               <Link href={"(modals)/personal"} asChild>
                 <Text style={styles.showProfileText}>Show profile</Text>

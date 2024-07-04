@@ -115,3 +115,19 @@ export interface FetchBookingByIdResponse {
   statusCode: number;
   success: boolean;
 }
+
+export interface FetchProfileResponse {
+  data: {
+    _id: string;
+    username: string;
+    email: string;
+    role: string;
+    loginType: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  message: string;
+  statusCode: number;
+  success: boolean;
+}
