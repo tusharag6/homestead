@@ -3,31 +3,34 @@ import React from "react";
 import { useFetchBookingQuery } from "@/redux/bookingApi";
 import ListingCard from "@/components/ListingCard";
 import BookingCard from "@/components/BookingCard";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Booking = () => {
   const { data: bookings, isFetching } = useFetchBookingQuery();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View>
-        <Text style={styles.screenHeader}>Your Bookings</Text>
-      </View>
-      {!bookings || bookings.data.length === 0 ? (
-        <View style={styles.body}>
-          <Text style={styles.title}>No Bookings Found</Text>
-          <Text style={styles.description}>
-            You currently have no bookings. Start exploring and book your
-            favorite places and experiences.
-          </Text>
+        <View>
+          <Text style={styles.screenHeader}>Your Bookings</Text>
         </View>
-      ) : (
-        <FlatList
-          data={bookings?.data}
-          renderItem={({ item }) => <BookingCard booking={item} />}
-          keyExtractor={(item) => item._id}
-        />
-      )}
-    </View>
+        {!bookings || bookings.data.length === 0 ? (
+          <View style={styles.body}>
+            <Text style={styles.title}>No Bookings Found</Text>
+            <Text style={styles.description}>
+              You currently have no bookings. Start exploring and book your
+              favorite places and experiences.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={bookings?.data}
+            renderItem={({ item }) => <BookingCard booking={item} />}
+            keyExtractor={(item) => item._id}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
