@@ -1,7 +1,8 @@
-import { format } from "date-fns";
+import { format, isBefore, startOfDay } from "date-fns";
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { DatePickerModal } from "react-native-paper-dates";
+import { showToast } from "./Toast";
 
 interface DateRange {
   startDate: Date | undefined;
@@ -34,6 +35,13 @@ const DatePicker: React.FC<DatePickerProps> = ({ onDateChange }) => {
 
   const onChange = React.useCallback(
     ({ startDate, endDate }: DateRange) => {
+      if (
+        startDate &&
+        isBefore(startOfDay(startDate), startOfDay(new Date()))
+      ) {
+        showToast("Check-in date cannot be in the past");
+        return;
+      }
       setRange({ startDate, endDate });
       onDateChange(startDate, endDate);
     },

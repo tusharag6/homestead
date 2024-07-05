@@ -200,10 +200,10 @@ const Booking = () => {
             <View style={{ marginBottom: 5 }}>
               <View style={styles.priceDetailItem}>
                 <Text style={styles.priceDetailLabel}>
-                  {numberOfDays} day(s)
+                  {numberOfDays} night(s), {numberOfGuests} guest(s)
                 </Text>
                 <Text style={styles.priceDetailValue}>
-                  Rs {listing.price * numberOfDays}
+                  Rs {listing.price * numberOfDays * numberOfGuests}
                 </Text>
               </View>
               <View style={styles.priceDetailItem}>
