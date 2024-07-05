@@ -141,9 +141,9 @@ const Booking = () => {
               <Text style={styles.detailLabel}>Dates</Text>
               <Text style={styles.detailValue}>{selectedDates}</Text>
             </View>
-            <Button variant="ghost" size="sm" textStyle={styles.editText}>
+            {/* <Button variant="ghost" size="sm" textStyle={styles.editText}>
               Edit
-            </Button>
+            </Button> */}
           </View>
           <View style={styles.detailItem}>
             <View style={styles.detailValueContainer}>

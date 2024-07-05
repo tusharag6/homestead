@@ -10,6 +10,7 @@ const bookingApi = apiSlice.injectEndpoints({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Reservations"],
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -22,6 +23,7 @@ const bookingApi = apiSlice.injectEndpoints({
     }),
     fetchBooking: builder.query<FetchBookingResponse, void>({
       query: () => `/bookings/user`,
+      providesTags: ["Reservations"],
     }),
     fetchBookingById: builder.query<FetchBookingByIdResponse, string>({
       query: (id) => `/bookings/${id}`,

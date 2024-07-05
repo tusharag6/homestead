@@ -137,14 +137,16 @@ const DetailsPage = () => {
             <View style={styles.container}>
               <Text style={styles.sectionTitle}>House rules</Text>
               <View style={styles.rulesContainer}>
-                {listing?.data?.house_rules.split(".").map((rule, index) => {
-                  if (rule.trim() === "") return null;
-                  return (
-                    <View key={index} style={styles.ruleWrapper}>
-                      <Text style={styles.ruleText}>{rule.trim()}.</Text>
-                    </View>
-                  );
-                })}
+                {(listing?.data?.house_rules ?? "")
+                  .split(".")
+                  .map((rule, index) => {
+                    if (rule.trim() === "") return null; // Skip empty strings
+                    return (
+                      <View key={index} style={styles.ruleWrapper}>
+                        <Text style={styles.ruleText}>{rule.trim()}.</Text>
+                      </View>
+                    );
+                  })}
               </View>
             </View>
 
