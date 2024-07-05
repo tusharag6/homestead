@@ -13,7 +13,8 @@ const bookingApi = apiSlice.injectEndpoints({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          if (data.statusCode == 200) {
+
+          if (data.statusCode == 201) {
             dispatch(clearBookingDetails());
           }
         } catch (error) {}

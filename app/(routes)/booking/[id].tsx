@@ -89,7 +89,6 @@ const Booking = () => {
     try {
       await reserve(payload).unwrap();
       showToast("Booked your accommodation");
-      dispatch(clearBookingDetails());
       router.replace("/(tabs)/booking");
     } catch (error: any) {
       showToast(error.data.message || "Booking Failed");

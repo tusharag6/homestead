@@ -1,4 +1,9 @@
-import { Link, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  Link,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import {
   View,
@@ -21,6 +26,8 @@ import { useFetchListingByIdQuery } from "@/redux/listingApi";
 import ListingLoader from "@/components/ListingLoader";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setBookingDetails } from "@/redux/bookingSlice";
+import DatePicker from "@/components/DatePicker";
+import { showToast } from "@/components/Toast";
 
 registerTranslation("en", en);
 
@@ -37,41 +44,14 @@ const DetailsPage = () => {
     error,
   } = useFetchListingByIdQuery(id as string);
   const navigation = useNavigation();
-
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  const [range, setRange] = useState<DateRange>({
-    startDate: undefined,
-    endDate: undefined,
-  });
-  const [open, setOpen] = useState(false);
-
-  const onDismiss = React.useCallback(() => {
-    setOpen(false);
-  }, [setOpen]);
-
-  const onClear = React.useCallback(
-    ({ startDate, endDate }: DateRange) => {
-      setRange({ startDate: undefined, endDate: undefined });
-    },
-    [setRange]
-  );
-  const onChange = React.useCallback(
-    ({ startDate, endDate }: DateRange) => {
-      setRange({ startDate, endDate });
-    },
-    [setRange]
-  );
-
-  const handleReserve = () => {
-    const payload = {
-      listing: listing?.data,
-      numberOfGuests: 1,
-      numberOfDays: 1,
-      startDate: range.startDate?.toISOString(),
-      endDate: range.endDate?.toISOString(),
-    };
-    dispatch(setBookingDetails(payload));
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const handleDateChange = (start: Date | undefined, end: Date | undefined) => {
+    setStartDate(start);
+    setEndDate(end);
   };
 
   useLayoutEffect(() => {
@@ -102,14 +82,22 @@ const DetailsPage = () => {
     }
   }, [listing?.data]);
 
-  const formatDate = (date: Date | undefined) => {
-    return date ? format(date, "MMM d") : "";
-  };
+  const handleReserve = () => {
+    if (!startDate && !endDate) {
+      showToast("Please select check-in and check-out dates");
+      return;
+    }
 
-  const selectedDates =
-    range.startDate && range.endDate
-      ? `${formatDate(range.startDate)} - ${formatDate(range.endDate)}`
-      : "Select dates";
+    const payload = {
+      listing: listing?.data,
+      numberOfGuests: 1,
+      numberOfDays: 1,
+      startDate: startDate?.toISOString(),
+      endDate: endDate?.toISOString(),
+    };
+    router.push(`(routes)/booking/${id}`);
+    dispatch(setBookingDetails(payload));
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -240,27 +228,18 @@ const DetailsPage = () => {
                   </Text>
                   <Text> / night</Text>
                 </View>
-                <View>
-                  <Text style={styles.footerDate} onPress={() => setOpen(true)}>
-                    {selectedDates}
-                  </Text>
-                  <DatePickerModal
-                    locale="en"
-                    mode="range"
-                    visible={open}
-                    onDismiss={onDismiss}
-                    startDate={range.startDate}
-                    endDate={range.endDate}
-                    onConfirm={onClear}
-                    onChange={onChange}
-                    saveLabel="Clear Dates"
-                  />
-                </View>
+                <DatePicker onDateChange={handleDateChange} />
               </View>
 
-              <Link href={`(routes)/booking/${id}`} asChild>
-                <Button onPress={handleReserve}>Reserve</Button>
-              </Link>
+              <Button
+                onPress={handleReserve}
+                disabled={!startDate && !endDate}
+                style={
+                  !startDate && !endDate ? { opacity: 0.5 } : { opacity: 1 }
+                }
+              >
+                Reserve
+              </Button>
             </View>
           </View>
         </View>

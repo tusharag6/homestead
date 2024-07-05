@@ -31,9 +31,20 @@ export const bookingSlice = createSlice({
     setBookingTotal: (state, action) => {
       state.price = action.payload.price;
     },
+    setStartDate: (state, action) => {
+      state.startDate = action.payload.startDate;
+    },
+    setEndDate: (state, action) => {
+      state.endDate = action.payload.endDate;
+    },
   },
 });
 
-export const { clearBookingDetails, setBookingDetails, setBookingTotal } =
-  bookingSlice.actions;
+export const {
+  clearBookingDetails,
+  setBookingDetails,
+  setBookingTotal,
+  setEndDate,
+  setStartDate,
+} = bookingSlice.actions;
 export default bookingSlice.reducer;
