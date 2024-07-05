@@ -12,6 +12,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Share,
 } from "react-native";
 import colors from "@/constants/Colors";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -28,6 +29,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setBookingDetails } from "@/redux/bookingSlice";
 import DatePicker from "@/components/DatePicker";
 import { showToast } from "@/components/Toast";
+import { useWishlist } from "@/hooks/useWishlist";
+import { Listing } from "@/types";
 
 registerTranslation("en", en);
 
@@ -54,6 +57,45 @@ const DetailsPage = () => {
     setEndDate(end);
   };
 
+  const shareListing = async () => {
+    const message = `
+      Check out this amazing accommodation!
+      
+      🏠 ${listing?.data.name}
+      📍 ${listing?.data.address}
+      💵 Price: Rs ${listing?.data.price} per night
+      ⭐ Rating: ${listing?.data.review_scores_rating} (${listing?.data.number_of_reviews} reviews)
+      
+      For more details and to book your stay, visit: ${listing?.data.listing_image_url}
+    `;
+
+    try {
+      await Share.share({
+        title: `Check out this accommodation: ${listing?.data.name}`,
+        message: message,
+        url: listing?.data.listing_image_url,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const { state, dispatch: dispatchWishlist } = useWishlist();
+  const isInWishlist = state.items.some(
+    (wishlistItem) => wishlistItem._id === listing?.data._id
+  );
+
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      dispatchWishlist({
+        type: "REMOVE_ITEM",
+        payload: { id: listing?.data._id as string },
+      });
+    } else {
+      dispatchWishlist({ type: "ADD_ITEM", payload: listing?.data as Listing });
+    }
+  };
+
   useLayoutEffect(() => {
     if (listing?.data) {
       navigation.setOptions({
@@ -62,11 +104,18 @@ const DetailsPage = () => {
         headerBackground: () => <View style={[styles.header]}></View>,
         headerRight: () => (
           <View style={styles.bar}>
-            <TouchableOpacity style={styles.roundButton}>
+            <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
               <Ionicons name="share-outline" size={22} color={"#000"} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.roundButton}>
-              <Ionicons name="heart-outline" size={22} color={"#000"} />
+            <TouchableOpacity
+              style={styles.roundButton}
+              onPress={toggleWishlist}
+            >
+              <Ionicons
+                name={isInWishlist ? "heart" : "heart-outline"}
+                size={22}
+                color={isInWishlist ? "red" : "black"}
+              />
             </TouchableOpacity>
           </View>
         ),
@@ -80,7 +129,7 @@ const DetailsPage = () => {
         ),
       });
     }
-  }, [listing?.data]);
+  }, [listing?.data, isInWishlist]);
 
   const handleReserve = () => {
     if (!startDate && !endDate) {
@@ -133,14 +182,16 @@ const DetailsPage = () => {
             <View style={styles.container}>
               <Text style={styles.sectionTitle}>About this place</Text>
               <View style={styles.rulesContainer}>
-                {listing?.data.description.split(".").map((desc, index) => {
-                  if (desc.trim() === "") return null;
-                  return (
-                    <View key={index} style={styles.ruleWrapper}>
-                      <Text style={styles.ruleText}>{desc.trim()}.</Text>
-                    </View>
-                  );
-                })}
+                {(listing?.data.description ?? "")
+                  .split(".")
+                  .map((desc, index) => {
+                    if (desc.trim() === "") return null;
+                    return (
+                      <View key={index} style={styles.ruleWrapper}>
+                        <Text style={styles.ruleText}>{desc.trim()}.</Text>
+                      </View>
+                    );
+                  })}
               </View>
             </View>
 
@@ -192,14 +243,16 @@ const DetailsPage = () => {
             <View style={styles.container}>
               <Text style={styles.sectionTitle}>House rules</Text>
               <View style={styles.rulesContainer}>
-                {listing?.data?.house_rules.split(".").map((rule, index) => {
-                  if (rule.trim() === "") return null; // Skip empty strings
-                  return (
-                    <View key={index} style={styles.ruleWrapper}>
-                      <Text style={styles.ruleText}>{rule.trim()}.</Text>
-                    </View>
-                  );
-                })}
+                {(listing?.data?.house_rules ?? "")
+                  .split(".")
+                  .map((rule, index) => {
+                    if (rule.trim() === "") return null; // Skip empty strings
+                    return (
+                      <View key={index} style={styles.ruleWrapper}>
+                        <Text style={styles.ruleText}>{rule.trim()}.</Text>
+                      </View>
+                    );
+                  })}
               </View>
             </View>
 
@@ -385,7 +438,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
-    color: colors.light.primary,
   },
   bar: {
     flexDirection: "row",
