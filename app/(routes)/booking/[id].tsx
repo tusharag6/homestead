@@ -5,12 +5,17 @@ import { Ionicons } from "@expo/vector-icons";
 import colors from "@/constants/Colors";
 import Button from "@/components/Button";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { format } from "date-fns";
-import { setBookingDetails, setBookingTotal } from "@/redux/bookingSlice";
+import { format, differenceInDays } from "date-fns";
+import {
+  clearBookingDetails,
+  setBookingDetails,
+  setBookingTotal,
+} from "@/redux/bookingSlice";
 import Input from "@/components/Input";
 import { useConfirmReservationMutation } from "@/redux/bookingApi";
 import { showToast } from "@/components/Toast";
 import { useRouter } from "expo-router";
+import Payments from "@/components/Payments";
 
 const Booking = () => {
   const listing = useAppSelector((state) => state.booking.listing);
@@ -19,15 +24,23 @@ const Booking = () => {
   const numberOfGuests = useAppSelector(
     (state) => state.booking.numberOfGuests
   );
-  const numberOfDays = useAppSelector((state) => state.booking.numberOfDays);
   const dispatch = useAppDispatch();
   const [totalPrice, setTotalPrice] = useState(0);
   const [isGuestEditing, setIsGuestEditing] = useState(false);
-  const [isDayEditing, setIsDayEditing] = useState(false);
+  const [numberOfDays, setNumberOfDays] = useState(0);
 
   const [input, setInput] = useState(numberOfGuests.toString());
-  const [reserve, { isLoading }] = useConfirmReservationMutation();
   const router = useRouter();
+  const [reserve, { isLoading }] = useConfirmReservationMutation();
+
+  const [paymentMethod, setPaymentMethod] = useState("card");
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      const days = differenceInDays(new Date(endDate), new Date(startDate));
+      setNumberOfDays(days);
+    }
+  }, [startDate, endDate]);
 
   useEffect(() => {
     calculateTotalPrice();
@@ -39,7 +52,7 @@ const Booking = () => {
       const totalGuests = numberOfGuests;
       const nights = numberOfDays;
 
-      const totalPriceWithoutTax = pricePerNight * totalGuests * nights;
+      const totalPriceWithoutTax = pricePerNight * nights * totalGuests;
       const taxes = 50;
       const totalPrice = totalPriceWithoutTax + taxes;
       setTotalPrice(totalPrice);
@@ -64,23 +77,6 @@ const Booking = () => {
     setIsGuestEditing(false);
   };
 
-  const handleDaySubmit = () => {
-    const parsedDay = parseInt(input, 10);
-
-    if (!isNaN(parsedDay)) {
-      const payload = {
-        listing: listing,
-        numberOfGuests: numberOfGuests,
-        numberOfDays: parsedDay,
-        startDate: startDate,
-        endDate: endDate,
-        price: totalPrice,
-      };
-      dispatch(setBookingDetails(payload));
-    }
-    setIsDayEditing(false);
-  };
-
   const handleBooking = async () => {
     const payload = {
       listing: listing,
@@ -92,8 +88,9 @@ const Booking = () => {
     };
     try {
       await reserve(payload).unwrap();
-      showToast("Booked your accomodation");
-      router.replace("/booking");
+      showToast("Booked your accommodation");
+      dispatch(clearBookingDetails());
+      router.replace("/(tabs)/booking");
     } catch (error: any) {
       showToast(error.data.message || "Booking Failed");
     }
@@ -113,7 +110,7 @@ const Booking = () => {
 
   const selectedDates =
     startDate && endDate
-      ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+      ? `${formatDate(new Date(startDate))} - ${formatDate(new Date(endDate))}`
       : "Select dates";
 
   return (
@@ -189,71 +186,46 @@ const Booking = () => {
               </Button>
             )}
           </View>
-          <View style={styles.detailItem}>
-            <View style={styles.detailValueContainer}>
-              <Text style={styles.detailLabel}>Days</Text>
-              {isDayEditing ? (
-                <Input
-                  style={styles.detailValue}
-                  value={input}
-                  onChangeText={(text: string) => {
-                    setInput(text);
-                  }}
-                  keyboardType="numeric"
-                  returnKeyType="done"
-                  autoFocus
-                />
-              ) : (
-                <Text style={styles.detailValue}>{numberOfDays} Day(s)</Text>
-              )}
-            </View>
-            {isDayEditing ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                textStyle={styles.editText}
-                onPress={handleDaySubmit}
-              >
-                Save
-              </Button>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                textStyle={styles.editText}
-                onPress={() => {
-                  setIsDayEditing((prev) => !prev);
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </View>
         </View>
 
-        <View style={styles.priceDetailsContainer}>
-          <Text style={styles.sectionTitle}>Your Total</Text>
-          <View style={{ marginBottom: 5 }}>
-            <View style={styles.priceDetailItem}>
-              <Text style={styles.priceDetailLabel}>{numberOfDays} day(s)</Text>
-              <Text style={styles.priceDetailValue}>
-                Rs {listing.price * numberOfGuests * numberOfDays}
-              </Text>
-            </View>
-            <View style={styles.priceDetailItem}>
-              <Text style={styles.priceDetailLabel}>Taxes</Text>
-              <Text style={styles.priceDetailValue}>Rs 50</Text>
-            </View>
-          </View>
-          <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceLabel}>Total</Text>
-            <Text style={styles.totalPriceValue}>Rs {totalPrice}</Text>
-          </View>
+        <View style={styles.paymentContainer}>
+          <Text style={styles.sectionTitle}>Payment Method</Text>
+          <Payments
+            selectedPayment={paymentMethod}
+            onPaymentSelect={setPaymentMethod}
+          />
         </View>
+        {totalPrice != 0 && (
+          <View style={styles.priceDetailsContainer}>
+            <Text style={styles.sectionTitle}>Your Total</Text>
+            <View style={{ marginBottom: 5 }}>
+              <View style={styles.priceDetailItem}>
+                <Text style={styles.priceDetailLabel}>
+                  {numberOfDays} day(s)
+                </Text>
+                <Text style={styles.priceDetailValue}>
+                  Rs {listing.price * numberOfDays}
+                </Text>
+              </View>
+              <View style={styles.priceDetailItem}>
+                <Text style={styles.priceDetailLabel}>Taxes</Text>
+                <Text style={styles.priceDetailValue}>Rs 50</Text>
+              </View>
+            </View>
+            <View style={styles.totalPriceContainer}>
+              <Text style={styles.totalPriceLabel}>Total</Text>
+              <Text style={styles.totalPriceValue}>Rs {totalPrice}</Text>
+            </View>
+          </View>
+        )}
       </View>
 
       <View style={styles.footer}>
-        <Button onPress={handleBooking} disabled={isLoading}>
+        <Button
+          onPress={handleBooking}
+          disabled={totalPrice === 0}
+          style={totalPrice === 0 ? { opacity: 0.5 } : { opacity: 1 }}
+        >
           Confirm Your Booking
         </Button>
       </View>
@@ -387,6 +359,11 @@ const styles = StyleSheet.create({
   totalPriceValue: {
     fontSize: 16,
     fontFamily: "mon-b",
+  },
+  paymentContainer: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.light.border,
   },
   footer: {
     backgroundColor: "#fff",
