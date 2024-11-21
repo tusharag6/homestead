@@ -9,8 +9,10 @@ import { setCredentials, clearCredentials } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://192.168.1.10:5000/api/v1/",
+  baseUrl: `${apiUrl}/api/v1`,
   prepareHeaders: async (headers) => {
     const token = await AsyncStorage.getItem("token");
     if (token) {

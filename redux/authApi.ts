@@ -14,7 +14,7 @@ const authApi = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
+          const { data } = await queryFulfilled;          
 
           if (data.statusCode == 200) {
             await AsyncStorage.setItem("token", data.data.token);
@@ -52,6 +52,7 @@ const authApi = apiSlice.injectEndpoints({
       query: () => "user/me",
     }),
   }),
+  overrideExisting: true
 });
 
 export const {
